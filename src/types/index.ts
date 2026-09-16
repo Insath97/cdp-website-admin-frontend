@@ -70,11 +70,14 @@ export interface Contact {
   message: string;
   reply: string | null;
   status: string;
+  is_active: boolean;
   is_replied: boolean;
   replied_by: number | null;
+  replied_at: string | null;
   created_at: string;
   updated_at: string;
   contact_type?: ContactType;
+  replied_by_user?: User;
 }
 
 export interface Service {
