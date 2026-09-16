@@ -63,6 +63,23 @@ export const navigation: NavGroup[] = [
     ],
   },
   {
+    title: "CAREERS",
+    items: [
+      {
+        label: "Manage Jobs",
+        href: "/careers",
+        icon: Briefcase,
+        permission: "Career Index",
+      },
+      {
+        label: "Applications",
+        href: "/career-applications",
+        icon: FileText,
+        permission: "Career Application Index",
+      },
+    ],
+  },
+  {
     title: "COMMUNICATION",
     items: [
       {
@@ -99,23 +116,6 @@ export const navigation: NavGroup[] = [
         href: "/contact-types",
         icon: Tag,
         permission: "Contact Type Index",
-      },
-    ],
-  },
-  {
-    title: "CAREERS",
-    items: [
-      {
-        label: "Manage Jobs",
-        href: "/careers",
-        icon: Briefcase,
-        permission: "Career Index",
-      },
-      {
-        label: "Applications",
-        href: "/career-applications",
-        icon: FileText,
-        permission: "Career Application Index",
       },
     ],
   },
