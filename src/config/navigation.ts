@@ -55,10 +55,10 @@ export const navigation: NavGroup[] = [
     title: "ENGAGEMENT",
     items: [
       {
-        label: "Events",
-        href: "/events",
-        icon: Calendar,
-        permission: "Event Index",
+        label: "Blogs",
+        href: "/blogs",
+        icon: FileText,
+        permission: "Blog Index",
       },
     ],
   },
