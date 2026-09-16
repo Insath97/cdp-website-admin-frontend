@@ -17,11 +17,11 @@ import {
   ToggleRight,
   List,
 } from "lucide-react";
-import apiClient from "@/lib/api-client";
+import { careerService } from "@/services";
 import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/lib/auth";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import type { Career } from "@/types";
+import type { Career } from "@/services";
 
 const IMAGE_URL = process.env.NEXT_PUBLIC_IMAGE_URL || "http://localhost:8000";
 
@@ -35,8 +35,8 @@ function ViewCareerContent({ careerId }: { careerId: string }) {
   const fetchCareer = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(`/careers/${careerId}`);
-      setCareer(response.data.data);
+      const data = await careerService.getById(careerId);
+      setCareer(data);
     } catch {
       toast("Failed to load career", "error");
       router.push("/careers");

@@ -43,12 +43,12 @@ export interface CareerQueryParams {
 export const careerService = {
   getAll: async (params?: CareerQueryParams): Promise<CareerListResponse> => {
     const response = await apiClient.get("/careers", { params });
-    return response.data;
+    return response.data.data;
   },
 
   getById: async (id: string): Promise<Career> => {
     const response = await apiClient.get(`/careers/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
   create: async (data: FormData): Promise<Career> => {

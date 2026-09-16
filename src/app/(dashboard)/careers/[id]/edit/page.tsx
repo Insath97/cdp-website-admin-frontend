@@ -36,8 +36,7 @@ function EditCareerContent({ careerId }: { careerId: string }) {
   const fetchCareer = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(`/careers/${careerId}`);
-      const data = response.data.data;
+      const data = await careerService.getById(careerId);
       setCareer(data);
       setFormData({
         title: data.title || "",
@@ -147,9 +146,7 @@ function EditCareerContent({ careerId }: { careerId: string }) {
         }
       });
 
-      await apiClient.post(`/careers/${career.id}`, payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await careerService.update(career.id, payload);
       toast("Career post updated successfully", "success");
       router.push("/careers");
     } catch (error: unknown) {

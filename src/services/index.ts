@@ -10,6 +10,7 @@ export { serviceService } from "./service.service";
 export { planService } from "./plan.service";
 export { activityLogService } from "./activity-log.service";
 export { careerService } from "./career.service";
+export { careerApplicationService } from "./career-application.service";
 
 export type {
   Branch,
@@ -70,3 +71,9 @@ export type {
   CareerListResponse,
   CareerQueryParams,
 } from "./career.service";
+
+export type {
+  CareerApplication,
+  CareerApplicationListResponse,
+  CareerApplicationQueryParams,
+} from "./career-application.service";

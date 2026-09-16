@@ -196,7 +196,7 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 hidden bg-[#168B61] transition-all duration-300 lg:block dark:bg-[#0a1f15]",
+          "fixed inset-y-0 left-0 z-30 hidden bg-[#168B61] transition-all duration-300 lg:block dark:bg-[#111827]",
           sidebarOpen ? "w-[240px]" : "w-[60px]"
         )}
       >
@@ -227,7 +227,7 @@ export function Sidebar() {
       {/* Mobile Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[240px] bg-[#168B61] transition-transform duration-300 lg:hidden dark:bg-[#0a1f15]",
+          "fixed inset-y-0 left-0 z-50 w-[240px] bg-[#168B61] transition-transform duration-300 lg:hidden dark:bg-[#111827]",
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
