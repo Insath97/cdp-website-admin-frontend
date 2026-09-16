@@ -5,6 +5,7 @@ export { userService } from "./user.service";
 export { roleService } from "./role.service";
 export { permissionService } from "./permission.service";
 export { contactTypeService } from "./contact-type.service";
+export { contactService } from "./contact.service";
 export { serviceService } from "./service.service";
 export { planService } from "./plan.service";
 export { activityLogService } from "./activity-log.service";
@@ -38,6 +39,12 @@ export type {
   ContactTypeListResponse,
   ContactTypeQueryParams,
 } from "./contact-type.service";
+
+export type {
+  Contact,
+  ContactListResponse,
+  ContactQueryParams,
+} from "./contact.service";
 
 export type {
   Service,

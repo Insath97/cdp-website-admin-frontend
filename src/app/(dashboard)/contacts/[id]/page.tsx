@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw, Reply, MessageSquare, User, Mail, Tag, Clock, Send, Loader2 } from "lucide-react";
-import apiClient from "@/lib/api-client";
 import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/lib/auth";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { contactService } from "@/services";
 import type { Contact } from "@/types";
 
 function ReplyModal({
@@ -35,9 +35,7 @@ function ReplyModal({
     setSubmitting(true);
     setError("");
     try {
-      await apiClient.post(`/contacts/${contact.id}/send-reply-email`, {
-        reply_message: replyMessage,
-      });
+      await contactService.sendReply(contact.id, replyMessage);
       toast("Reply sent successfully", "success");
       onReply();
       onClose();
@@ -131,8 +129,8 @@ function ViewContactContent({ contactId }: { contactId: string }) {
   const fetchContact = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(`/contacts/${contactId}`);
-      setContact(response.data.data);
+      const response = await contactService.getById(Number(contactId));
+      setContact(response);
     } catch {
       toast("Failed to load contact", "error");
       router.push("/contacts");

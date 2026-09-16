@@ -15,11 +15,11 @@ import {
   Mail,
   MailOpen,
 } from "lucide-react";
-import apiClient from "@/lib/api-client";
 import { useAuthStore } from "@/lib/auth";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { contactService } from "@/services";
 import type { Contact } from "@/types";
 
 function ContactsContent() {
@@ -50,8 +50,8 @@ function ContactsContent() {
       };
       if (debouncedSearch) params.search = debouncedSearch;
 
-      const response = await apiClient.get("/contacts", { params });
-      const resData = response.data.data;
+      const response = await contactService.getAll(params);
+      const resData = response.data;
 
       if (Array.isArray(resData)) {
         setContacts(resData);
@@ -101,7 +101,7 @@ function ContactsContent() {
     if (!deleteDialog.contact) return;
     setDeleting(true);
     try {
-      await apiClient.delete(`/contacts/${deleteDialog.contact.id}`);
+      await contactService.delete(deleteDialog.contact.id);
       fetchContacts(pagination.currentPage);
       toast("Contact deleted successfully", "success");
       setDeleteDialog({ open: false, contact: null });
@@ -113,11 +113,8 @@ function ContactsContent() {
   };
 
   const handleToggleStatus = async (contact: Contact) => {
-    const endpoint = contact.is_active
-      ? `/contacts/${contact.id}/deactivate`
-      : `/contacts/${contact.id}/activate`;
     try {
-      await apiClient.patch(endpoint);
+      await contactService.toggleStatus(contact.id, contact.is_active);
       fetchContacts(pagination.currentPage);
       toast(`Contact ${contact.is_active ? "deactivated" : "activated"} successfully`, "success");
     } catch {
