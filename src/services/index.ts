@@ -9,6 +9,7 @@ export { contactService } from "./contact.service";
 export { serviceService } from "./service.service";
 export { planService } from "./plan.service";
 export { activityLogService } from "./activity-log.service";
+export { careerService } from "./career.service";
 
 export type {
   Branch,
@@ -63,3 +64,9 @@ export type {
   ActivityLogListResponse,
   ActivityLogQueryParams,
 } from "./activity-log.service";
+
+export type {
+  Career,
+  CareerListResponse,
+  CareerQueryParams,
+} from "./career.service";
