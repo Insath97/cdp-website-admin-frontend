@@ -52,6 +52,17 @@ export const navigation: NavGroup[] = [
     ],
   },
   {
+    title: "ENGAGEMENT",
+    items: [
+      {
+        label: "Events",
+        href: "/events",
+        icon: Calendar,
+        permission: "Event Index",
+      },
+    ],
+  },
+  {
     title: "COMMUNICATION",
     items: [
       {
@@ -88,17 +99,6 @@ export const navigation: NavGroup[] = [
         href: "/contact-types",
         icon: Tag,
         permission: "Contact Type Index",
-      },
-    ],
-  },
-  {
-    title: "ENGAGEMENT",
-    items: [
-      {
-        label: "Events",
-        href: "/events",
-        icon: Calendar,
-        permission: "Event Index",
       },
     ],
   },
