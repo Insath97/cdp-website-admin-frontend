@@ -58,7 +58,7 @@ export const navigation: NavGroup[] = [
         label: "Blogs",
         href: "/blogs",
         icon: FileText,
-        permission: "Blog Index",
+        permission: "Event Index",
       },
     ],
   },

@@ -11,6 +11,7 @@ export { planService } from "./plan.service";
 export { activityLogService } from "./activity-log.service";
 export { careerService } from "./career.service";
 export { careerApplicationService } from "./career-application.service";
+export { blogService } from "./blog.service";
 
 export type {
   Branch,
@@ -77,3 +78,9 @@ export type {
   CareerApplicationListResponse,
   CareerApplicationQueryParams,
 } from "./career-application.service";
+
+export type {
+  Blog,
+  BlogListResponse,
+  BlogQueryParams,
+} from "./blog.service";
