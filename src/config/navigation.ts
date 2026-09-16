@@ -49,12 +49,6 @@ export const navigation: NavGroup[] = [
         icon: Globe,
         permission: "CMS Index",
       },
-      {
-        label: "Contact Types",
-        href: "/contact-types",
-        icon: Tag,
-        permission: "Contact Type Index",
-      },
     ],
   },
   {
@@ -83,6 +77,18 @@ export const navigation: NavGroup[] = [
         icon: Cpu,
         permission: "Service Index",
       },
+      {
+        label: "Plans",
+        href: "/plans",
+        icon: Target,
+        permission: "Plan Index",
+      },
+      {
+        label: "Contact Types",
+        href: "/contact-types",
+        icon: Tag,
+        permission: "Contact Type Index",
+      },
     ],
   },
   {
@@ -93,12 +99,6 @@ export const navigation: NavGroup[] = [
         href: "/events",
         icon: Calendar,
         permission: "Event Index",
-      },
-      {
-        label: "Plans",
-        href: "/plans",
-        icon: Target,
-        permission: "Plan Index",
       },
     ],
   },

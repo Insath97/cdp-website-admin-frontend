@@ -1,28 +1,27 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import {
   Plus,
   Search,
   MoreHorizontal,
   Edit,
   Trash2,
-  Eye,
-  UserCheck,
-  UserX,
+  ToggleLeft,
+  ToggleRight,
   RefreshCw,
   X,
   ChevronDown,
-  Users,
+  Tag,
+  Save,
+  Loader2,
 } from "lucide-react";
 import apiClient from "@/lib/api-client";
 import { useAuthStore } from "@/lib/auth";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { formatDate } from "@/lib/utils";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import type { User } from "@/types";
+import type { ContactType } from "@/types";
 
 function SearchSelect({
   value,
@@ -32,7 +31,7 @@ function SearchSelect({
 }: {
   value: string;
   onChange: (val: string) => void;
-  options: string[];
+  options: { label: string; value: string }[];
   placeholder: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -41,7 +40,7 @@ function SearchSelect({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filtered = options.filter((o) =>
-    o.toLowerCase().includes(query.toLowerCase())
+    o.label.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {
@@ -72,7 +71,7 @@ function SearchSelect({
         className="flex h-10 w-full items-center justify-between rounded-lg border border-border bg-surface px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
       >
         <span className={value ? "text-text-primary dark:text-white" : "text-text-muted dark:text-gray-400"}>
-          {value || placeholder}
+          {options.find((o) => o.value === value)?.label || placeholder}
         </span>
         <ChevronDown className={`h-4 w-4 text-text-muted transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -104,16 +103,16 @@ function SearchSelect({
             ) : (
               filtered.map((opt) => (
                 <button
-                  key={opt}
+                  key={opt.value}
                   type="button"
-                  onClick={() => handleSelect(opt)}
+                  onClick={() => handleSelect(opt.value)}
                   className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-sm ${
-                    opt === value
+                    opt.value === value
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-text-primary hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                   }`}
                 >
-                  {opt}
+                  {opt.label}
                 </button>
               ))
             )}
@@ -124,16 +123,175 @@ function SearchSelect({
   );
 }
 
-function UsersContent() {
-  const router = useRouter();
+function ContactTypeModal({
+  open,
+  onClose,
+  onSave,
+  contactType,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  contactType?: ContactType | null;
+}) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    code: "",
+    description: "",
+    is_active: true,
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const isEdit = !!contactType;
+
+  useEffect(() => {
+    if (open) {
+      if (contactType) {
+        setFormData({
+          name: contactType.name || "",
+          code: contactType.code || "",
+          description: contactType.description || "",
+          is_active: contactType.is_active,
+        });
+      } else {
+        setFormData({ name: "", code: "", description: "", is_active: true });
+      }
+      setFormErrors({});
+    }
+  }, [open, contactType]);
+
+  const handleSubmit = async () => {
+    setFormErrors({});
+    setSubmitting(true);
+    try {
+      if (isEdit) {
+        await apiClient.put(`/contact-types/${contactType.id}`, {
+          ...formData,
+          is_active: formData.is_active ? 1 : 0,
+        });
+        toast("Contact type updated successfully", "success");
+      } else {
+        await apiClient.post("/contact-types", {
+          ...formData,
+          is_active: formData.is_active ? 1 : 0,
+        });
+        toast("Contact type created successfully", "success");
+      }
+      onSave();
+      onClose();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { errors?: Record<string, string[]> } } };
+      if (err.response?.data?.errors) {
+        setFormErrors(err.response.data.errors);
+      }
+      toast(`Failed to ${isEdit ? "update" : "create"} contact type`, "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative mx-4 w-full max-w-lg rounded-xl border border-border bg-surface p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-text-primary dark:text-white">
+            {isEdit ? "Edit Contact Type" : "Create Contact Type"}
+          </h2>
+          <button onClick={onClose} className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Name + Code */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">Name *</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter name"
+                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+              />
+              {formErrors.name && <p className="mt-1 text-xs text-red-500">{formErrors.name[0]}</p>}
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">Code *</label>
+              <input
+                type="text"
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                placeholder="Enter code"
+                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+              />
+              {formErrors.code && <p className="mt-1 text-xs text-red-500">{formErrors.code[0]}</p>}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">Description</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+              placeholder="Enter description (optional)"
+              maxLength={1024}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+            />
+            <p className="mt-1 text-xs text-text-muted dark:text-gray-500">{formData.description.length}/1024</p>
+            {formErrors.description && <p className="mt-1 text-xs text-red-500">{formErrors.description[0]}</p>}
+          </div>
+
+          {/* Status */}
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
+            />
+            <span className="text-sm font-medium text-text-primary dark:text-gray-300">Active</span>
+          </label>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text-primary hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || !formData.name || !formData.code}
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+          >
+            {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Save className="h-4 w-4" />
+            {isEdit ? "Update" : "Create"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ContactTypesContent() {
   const { hasPermission } = useAuthStore();
   const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>([]);
+  const [contactTypes, setContactTypes] = useState<ContactType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
-  const [roleNames, setRoleNames] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState("");
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
@@ -141,11 +299,13 @@ function UsersContent() {
     total: 0,
   });
   const [actionMenuId, setActionMenuId] = useState<number | null>(null);
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; contactType: ContactType | null }>({ open: false, contactType: null });
   const [deleting, setDeleting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingContactType, setEditingContactType] = useState<ContactType | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const fetchUsers = useCallback(async (page = 1) => {
+  const fetchContactTypes = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       const params: Record<string, string | number> = {
@@ -153,16 +313,16 @@ function UsersContent() {
         per_page: pagination.perPage,
       };
       if (debouncedSearch) params.search = debouncedSearch;
-      if (roleFilter) params.role = roleFilter;
+      if (statusFilter) params.is_active = statusFilter;
 
-      const response = await apiClient.get("/users", { params });
+      const response = await apiClient.get("/contact-types", { params });
       const resData = response.data.data;
 
       if (Array.isArray(resData)) {
-        setUsers(resData);
+        setContactTypes(resData);
         setPagination((prev) => ({ ...prev, currentPage: 1, lastPage: 1, total: resData.length }));
       } else if (resData?.data) {
-        setUsers(resData.data);
+        setContactTypes(resData.data);
         setPagination({
           currentPage: resData.current_page || 1,
           lastPage: resData.last_page || 1,
@@ -170,34 +330,19 @@ function UsersContent() {
           total: resData.total || 0,
         });
       } else {
-        setUsers([]);
+        setContactTypes([]);
       }
     } catch {
-      toast("Failed to load users", "error");
-      setUsers([]);
+      toast("Failed to load contact types", "error");
+      setContactTypes([]);
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, roleFilter, pagination.perPage, toast]);
-
-  const fetchRoleNames = useCallback(async () => {
-    try {
-      const response = await apiClient.get("/roles/list");
-      const data = response.data.data;
-      const names = Array.isArray(data) ? data.map((r: { name: string }) => r.name) : [];
-      setRoleNames(names);
-    } catch {
-      setRoleNames([]);
-    }
-  }, []);
+  }, [debouncedSearch, statusFilter, pagination.perPage, toast]);
 
   useEffect(() => {
-    fetchUsers(1);
-  }, [fetchUsers]);
-
-  useEffect(() => {
-    fetchRoleNames();
-  }, [fetchRoleNames]);
+    fetchContactTypes(1);
+  }, [fetchContactTypes]);
 
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -218,31 +363,42 @@ function UsersContent() {
   }, [actionMenuId]);
 
   const handleDelete = async () => {
-    if (!deleteDialog.user) return;
+    if (!deleteDialog.contactType) return;
     setDeleting(true);
     try {
-      await apiClient.delete(`/users/${deleteDialog.user.id}`);
-      fetchUsers(pagination.currentPage);
-      toast("User deleted successfully", "success");
-      setDeleteDialog({ open: false, user: null });
+      await apiClient.delete(`/contact-types/${deleteDialog.contactType.id}`);
+      fetchContactTypes(pagination.currentPage);
+      toast("Contact type deleted successfully", "success");
+      setDeleteDialog({ open: false, contactType: null });
     } catch {
-      toast("Failed to delete user", "error");
+      toast("Failed to delete contact type", "error");
     } finally {
       setDeleting(false);
     }
   };
 
-  const handleToggleActive = async (user: User) => {
-    const endpoint = user.is_active
-      ? `/users/${user.id}/deactivate`
-      : `/users/${user.id}/activate`;
+  const handleToggleStatus = async (contactType: ContactType) => {
+    const endpoint = contactType.is_active
+      ? `/contact-types/${contactType.id}/deactivate`
+      : `/contact-types/${contactType.id}/activate`;
     try {
       await apiClient.patch(endpoint);
-      fetchUsers(pagination.currentPage);
-      toast(`User ${user.is_active ? "deactivated" : "activated"} successfully`, "success");
+      fetchContactTypes(pagination.currentPage);
+      toast(`Contact type ${contactType.is_active ? "deactivated" : "activated"} successfully`, "success");
     } catch {
-      toast("Failed to update user status", "error");
+      toast("Failed to update contact type status", "error");
     }
+  };
+
+  const openCreateModal = () => {
+    setEditingContactType(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (ct: ContactType) => {
+    setEditingContactType(ct);
+    setModalOpen(true);
+    setActionMenuId(null);
   };
 
   return (
@@ -250,29 +406,29 @@ function UsersContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary dark:text-white">Users</h1>
+          <h1 className="text-2xl font-bold text-text-primary dark:text-white">Contact Types</h1>
           <p className="text-sm text-text-muted dark:text-gray-400">
-            Manage system users and their access ({pagination.total} total)
+            Manage contact types ({pagination.total} total)
           </p>
         </div>
-        {hasPermission("User Create") && (
+        {hasPermission("Contact Type Create") && (
           <button
-            onClick={() => router.push("/users/create")}
+            onClick={openCreateModal}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
-            Add User
+            Add Contact Type
           </button>
         )}
       </div>
 
-      {/* Search + Role Filter - 1 Row */}
+      {/* Search + Status Filter */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
-            placeholder="Search users by name, email or username..."
+            placeholder="Search contact types by name, code or slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-10 w-full rounded-lg border border-border bg-surface pl-10 pr-10 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -287,10 +443,14 @@ function UsersContent() {
           )}
         </div>
         <SearchSelect
-          value={roleFilter}
-          onChange={setRoleFilter}
-          options={roleNames}
-          placeholder="All Roles"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={[
+            { label: "All Status", value: "" },
+            { label: "Active", value: "1" },
+            { label: "Inactive", value: "0" },
+          ]}
+          placeholder="All Status"
         />
       </div>
 
@@ -300,10 +460,10 @@ function UsersContent() {
           <div className="flex h-64 items-center justify-center">
             <RefreshCw className="h-6 w-6 animate-spin text-primary" />
           </div>
-        ) : users.length === 0 ? (
+        ) : contactTypes.length === 0 ? (
           <div className="flex h-64 flex-col items-center justify-center gap-2 text-text-muted dark:text-gray-400">
-            <Users className="h-10 w-10 opacity-30" />
-            <p>No users found</p>
+            <Tag className="h-10 w-10 opacity-30" />
+            <p>No contact types found</p>
           </div>
         ) : (
           <div>
@@ -311,82 +471,72 @@ function UsersContent() {
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Name</th>
-                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Email</th>
-                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Username</th>
-                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Role</th>
+                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Code</th>
+                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Description</th>
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Status</th>
-                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Last Login</th>
-                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Actions</th>
+                  <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border dark:divide-gray-700">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                {contactTypes.map((ct) => (
+                  <tr key={ct.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-                          {user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                          {ct.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-medium text-text-primary dark:text-white">{user.name}</span>
+                        <span className="font-medium text-text-primary dark:text-white">{ct.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-text-muted dark:text-gray-400">{user.email}</td>
-                    <td className="px-4 py-3 text-text-muted dark:text-gray-400">{user.username}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        {user.roles?.[0]?.name || "No Role"}
+                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                        {ct.code}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-text-muted dark:text-gray-400 max-w-[200px] truncate">
+                      {ct.description || "-"}
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                          user.is_active
+                          ct.is_active
                             ? "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
                         }`}
                       >
-                        {user.is_active ? "Active" : "Inactive"}
+                        {ct.is_active ? "Active" : "Inactive"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-text-muted dark:text-gray-400">
-                      {user.last_login_at ? formatDate(user.last_login_at) : "Never"}
-                    </td>
-                    <td className="relative px-4 py-3">
+                    <td className="px-4 py-3 text-right">
                       <div className="relative inline-block">
                         <button
-                          onClick={() => setActionMenuId(actionMenuId === user.id ? null : user.id)}
+                          onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === ct.id ? null : ct.id); }}
                           className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
-                        {actionMenuId === user.id && (
-                          <div className="absolute right-0 top-full z-50 mt-1 w-40 rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
-                            <button
-                              onClick={() => { router.push(`/users/${user.id}`); setActionMenuId(null); }}
-                              className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              <Eye className="h-4 w-4" /> View
-                            </button>
-                            {hasPermission("User Update") && (
+                        {actionMenuId === ct.id && (
+                          <div className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                            {hasPermission("Contact Type Update") && (
                               <button
-                                onClick={() => { router.push(`/users/${user.id}/edit`); setActionMenuId(null); }}
+                                onClick={() => openEditModal(ct)}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
                               >
                                 <Edit className="h-4 w-4" /> Edit
                               </button>
                             )}
-                            {hasPermission("User Update") && (
+                            {hasPermission("Contact Type Toggle Active") && (
                               <button
-                                onClick={() => { handleToggleActive(user); setActionMenuId(null); }}
+                                onClick={() => { handleToggleStatus(ct); setActionMenuId(null); }}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
                               >
-                                {user.is_active ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                                {user.is_active ? "Deactivate" : "Activate"}
+                                {ct.is_active ? <ToggleLeft className="h-4 w-4" /> : <ToggleRight className="h-4 w-4" />}
+                                {ct.is_active ? "Deactivate" : "Activate"}
                               </button>
                             )}
-                            {hasPermission("User Delete") && (
+                            {hasPermission("Contact Type Delete") && (
                               <button
-                                onClick={() => { setDeleteDialog({ open: true, user }); setActionMenuId(null); }}
+                                onClick={() => { setDeleteDialog({ open: true, contactType: ct }); setActionMenuId(null); }}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                               >
                                 <Trash2 className="h-4 w-4" /> Delete
@@ -406,14 +556,11 @@ function UsersContent() {
 
       {/* Pagination */}
       <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:items-center sm:justify-between">
-        {/* Left - Info */}
         <p className="text-sm font-medium text-text-primary dark:text-white">
           Displaying{" "}
-          <span className="font-bold">{users.length}</span> of{" "}
-          <span className="font-bold">{pagination.total}</span> USERS
+          <span className="font-bold">{contactTypes.length}</span> of{" "}
+          <span className="font-bold">{pagination.total}</span> CONTACT TYPES
         </p>
-
-        {/* Right - Controls */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
@@ -421,7 +568,7 @@ function UsersContent() {
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
-                fetchUsers(1);
+                fetchContactTypes(1);
               }}
               className="h-8 rounded-md border border-border bg-background px-2 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             >
@@ -431,11 +578,10 @@ function UsersContent() {
               <option value={50}>50</option>
             </select>
           </div>
-
           {pagination.lastPage >= 1 && (
             <div className="flex items-center gap-1">
               <button
-                onClick={() => fetchUsers(pagination.currentPage - 1)}
+                onClick={() => fetchContactTypes(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
@@ -447,9 +593,7 @@ function UsersContent() {
                   return page === 1 || page === pagination.lastPage || (page >= current - 1 && page <= current + 1);
                 })
                 .reduce<(number | string)[]>((acc, page, idx, arr) => {
-                  if (idx > 0 && (page as number) - (arr[idx - 1] as number) > 1) {
-                    acc.push("...");
-                  }
+                  if (idx > 0 && (page as number) - (arr[idx - 1] as number) > 1) acc.push("...");
                   acc.push(page);
                   return acc;
                 }, [])
@@ -459,7 +603,7 @@ function UsersContent() {
                   ) : (
                     <button
                       key={page}
-                      onClick={() => fetchUsers(page)}
+                      onClick={() => fetchContactTypes(page)}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -471,7 +615,7 @@ function UsersContent() {
                   )
                 )}
               <button
-                onClick={() => fetchUsers(pagination.currentPage + 1)}
+                onClick={() => fetchContactTypes(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
@@ -486,20 +630,28 @@ function UsersContent() {
       <ConfirmDialog
         open={deleteDialog.open}
         title="Confirm Delete"
-        message={`Are you sure you want to delete "${deleteDialog.user?.name}"?`}
+        message={`Are you sure you want to delete "${deleteDialog.contactType?.name}"?`}
         confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteDialog({ open: false, user: null })}
+        onCancel={() => setDeleteDialog({ open: false, contactType: null })}
         loading={deleting}
+      />
+
+      {/* Create/Edit Modal */}
+      <ContactTypeModal
+        open={modalOpen}
+        onClose={() => { setModalOpen(false); setEditingContactType(null); }}
+        onSave={() => fetchContactTypes(pagination.currentPage)}
+        contactType={editingContactType}
       />
     </div>
   );
 }
 
-export default function UsersPage() {
+export default function ContactTypesPage() {
   return (
-    <PermissionGuard permission="User Index">
-      <UsersContent />
+    <PermissionGuard permission="Contact Type Index">
+      <ContactTypesContent />
     </PermissionGuard>
   );
 }

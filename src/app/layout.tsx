@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MIS - Persons with Disabilities Management System",
+  title: "CDP Website Admin Portal",
   description:
-    "A comprehensive management information system for persons with disabilities",
+    "CDP Website Administration Dashboard",
 };
 
 export default function RootLayout({

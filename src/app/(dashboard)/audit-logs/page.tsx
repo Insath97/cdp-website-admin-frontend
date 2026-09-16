@@ -35,7 +35,7 @@ function AuditLogsContent() {
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
-    perPage: 15,
+    perPage: 10,
     total: 0,
   });
 
@@ -197,10 +197,10 @@ function AuditLogsContent() {
 
       {/* Advanced Filters */}
       {showFilters && (
-        <div className="rounded-xl border border-border bg-surface p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-xl border border-border bg-surface p-5 dark:border-gray-700 dark:bg-gray-800">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted dark:text-gray-400">Module</label>
+              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Module</label>
               <select
                 value={moduleFilter}
                 onChange={(e) => setModuleFilter(e.target.value)}
@@ -213,7 +213,7 @@ function AuditLogsContent() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted dark:text-gray-400">Action</label>
+              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Action</label>
               <select
                 value={actionFilter}
                 onChange={(e) => setActionFilter(e.target.value)}
@@ -226,7 +226,7 @@ function AuditLogsContent() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted dark:text-gray-400">Start Date</label>
+              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Start Date</label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <input
@@ -238,7 +238,7 @@ function AuditLogsContent() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted dark:text-gray-400">End Date</label>
+              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">End Date</label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <input
@@ -251,7 +251,7 @@ function AuditLogsContent() {
             </div>
           </div>
           {hasActiveFilters && (
-            <div className="mt-3 flex justify-end">
+            <div className="mt-4 flex justify-end border-t border-border pt-3 dark:border-gray-700">
               <button
                 onClick={clearFilters}
                 className="text-xs font-medium text-primary hover:text-primary/80"
@@ -353,60 +353,82 @@ function AuditLogsContent() {
       </div>
 
       {/* Pagination */}
-      {pagination.lastPage > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-text-muted dark:text-gray-400">
-            Showing {((pagination.currentPage - 1) * pagination.perPage) + 1} to{" "}
-            {Math.min(pagination.currentPage * pagination.perPage, pagination.total)} of{" "}
-            {pagination.total} logs
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => fetchLogs(pagination.currentPage - 1)}
-              disabled={pagination.currentPage <= 1}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left - Info */}
+        <p className="text-sm font-medium text-text-primary dark:text-white">
+          Displaying{" "}
+          <span className="font-bold">{logs.length}</span> of{" "}
+          <span className="font-bold">{pagination.total}</span> ACTIVITY LOGS
+        </p>
+
+        {/* Right - Controls */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <select
+              value={pagination.perPage}
+              onChange={(e) => {
+                setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
+                fetchLogs(1);
+              }}
+              className="h-8 rounded-md border border-border bg-background px-2 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            {Array.from({ length: pagination.lastPage }, (_, i) => i + 1)
-              .filter((page) => {
-                const current = pagination.currentPage;
-                return page === 1 || page === pagination.lastPage || (page >= current - 1 && page <= current + 1);
-              })
-              .reduce<(number | string)[]>((acc, page, idx, arr) => {
-                if (idx > 0 && (page as number) - (arr[idx - 1] as number) > 1) {
-                  acc.push("...");
-                }
-                acc.push(page);
-                return acc;
-              }, [])
-              .map((page, idx) =>
-                typeof page === "string" ? (
-                  <span key={`dots-${idx}`} className="px-1 text-text-muted dark:text-gray-500">...</span>
-                ) : (
-                  <button
-                    key={page}
-                    onClick={() => fetchLogs(page)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium ${
-                      page === pagination.currentPage
-                        ? "bg-primary text-white"
-                        : "border border-border bg-surface text-text-muted hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
-            <button
-              onClick={() => fetchLogs(pagination.currentPage + 1)}
-              disabled={pagination.currentPage >= pagination.lastPage}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
           </div>
+
+          {pagination.lastPage >= 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => fetchLogs(pagination.currentPage - 1)}
+                disabled={pagination.currentPage <= 1}
+                className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+              >
+                « Prev
+              </button>
+              {Array.from({ length: pagination.lastPage }, (_, i) => i + 1)
+                .filter((page) => {
+                  const current = pagination.currentPage;
+                  return page === 1 || page === pagination.lastPage || (page >= current - 1 && page <= current + 1);
+                })
+                .reduce<(number | string)[]>((acc, page, idx, arr) => {
+                  if (idx > 0 && (page as number) - (arr[idx - 1] as number) > 1) {
+                    acc.push("...");
+                  }
+                  acc.push(page);
+                  return acc;
+                }, [])
+                .map((page, idx) =>
+                  typeof page === "string" ? (
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                  ) : (
+                    <button
+                      key={page}
+                      onClick={() => fetchLogs(page)}
+                      className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
+                        page === pagination.currentPage
+                          ? "bg-primary text-white"
+                          : "border border-border bg-surface text-text-muted hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              <button
+                onClick={() => fetchLogs(pagination.currentPage + 1)}
+                disabled={pagination.currentPage >= pagination.lastPage}
+                className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+              >
+                Next »
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Detail Modal */}
       {showDetailModal && (
