@@ -14,6 +14,9 @@ import {
   Target,
   Briefcase,
   FileText,
+  Home,
+  Info,
+  Phone,
 } from "lucide-react";
 
 export interface NavItem {
@@ -21,6 +24,7 @@ export interface NavItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   permission?: string;
+  children?: NavItem[];
 }
 
 export interface NavGroup {
@@ -48,6 +52,26 @@ export const navigation: NavGroup[] = [
         href: "/cms",
         icon: Globe,
         permission: "CMS Index",
+        children: [
+          {
+            label: "Home",
+            href: "/cms?page=home",
+            icon: Home,
+            permission: "CMS Index",
+          },
+          {
+            label: "About",
+            href: "/cms?page=about",
+            icon: Info,
+            permission: "CMS Index",
+          },
+          {
+            label: "Contact",
+            href: "/cms?page=contact",
+            icon: Phone,
+            permission: "CMS Index",
+          },
+        ],
       },
     ],
   },
@@ -55,9 +79,9 @@ export const navigation: NavGroup[] = [
     title: "ENGAGEMENT",
     items: [
       {
-        label: "Blogs",
-        href: "/blogs",
-        icon: FileText,
+        label: "Events",
+        href: "/events",
+        icon: Calendar,
         permission: "Event Index",
       },
     ],

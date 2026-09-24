@@ -12,6 +12,9 @@ export { activityLogService } from "./activity-log.service";
 export { careerService } from "./career.service";
 export { careerApplicationService } from "./career-application.service";
 export { blogService } from "./blog.service";
+export { eventService } from "./event.service";
+export { systemSettingService } from "./system-setting.service";
+export { cmsService } from "./cms.service";
 
 export type {
   Branch,
@@ -84,3 +87,16 @@ export type {
   BlogListResponse,
   BlogQueryParams,
 } from "./blog.service";
+
+export type {
+  Event,
+  EventListResponse,
+  EventQueryParams,
+  EventGallery,
+  EventUrl,
+  Tag,
+} from "./event.service";
+
+export type { SystemSettings } from "./system-setting.service";
+
+export type { CmsContent, CmsPageContent, CmsUpdateItem } from "./cms.service";

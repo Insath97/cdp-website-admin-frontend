@@ -96,21 +96,26 @@ export interface Event {
   title: string;
   slug: string;
   created_date: string;
-  created_by: number;
+  created_by: User | number;
   thumbnail_image: string | null;
-  url: string | null;
   description: string;
   is_active: boolean;
-  status: "pending" | "approved" | "rejected";
-  decision_by: number | null;
+  status: "draft" | "pending" | "approved" | "rejected";
+  decision_by: User | number | null;
   decision_at: string | null;
   rejected_reason: string | null;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
   galleries?: EventGallery[];
+  urls?: EventUrl[];
   tags?: Tag[];
-  created_by_user?: User;
+}
+
+export interface EventUrl {
+  id: number;
+  event_id: number;
+  url: string;
 }
 
 export interface EventGallery {
@@ -220,6 +225,61 @@ export interface ApiResponse<T> {
   status: string;
   message: string;
   data: T;
+}
+
+export interface CmsContent {
+  id: number;
+  page: string;
+  section: string;
+  key: string;
+  value: string | null;
+  type: "text" | "textarea" | "image" | "video" | "pdf" | "svg" | "file" | "link" | "icon";
+  label: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CmsPageContent {
+  [section: string]: {
+    [key: string]: {
+      value: string | null;
+      type: string;
+      metadata?: Record<string, unknown> | null;
+    };
+  };
+}
+
+export interface CmsUpdateItem {
+  page: string;
+  section: string;
+  key: string;
+  value: string | null;
+  type: string;
+  label?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface SystemSettings {
+  site_name?: string;
+  site_logo?: string;
+  site_favicon?: string;
+  official_email?: string;
+  digital_presence?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  youtube_url?: string;
+  twitter_url?: string;
+  linkedin_url?: string;
+  office_address?: string;
+  contact_notification_email?: string;
+  enable_contact_notification?: string;
+  mobile_number?: string;
+  whatsapp_number?: string;
+  head_office_address?: string;
+  company_registration_number?: string;
+  career_mail?: string;
+  enable_job_alert_notification?: string;
 }
 
 export interface PaginatedResponse<T> {

@@ -65,7 +65,7 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">View blog post</p>
         </div>
         <div className="flex items-center gap-3">
-          {hasPermission("Blog Update") && (
+          {hasPermission("Event Update") && (
             <button
               onClick={() => router.push(`/blogs/${blog.id}/edit`)}
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
@@ -156,7 +156,7 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
 export default function ViewBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (
-    <PermissionGuard permission="Blog Index">
+    <PermissionGuard permission="Event Index">
       <ViewBlogContent blogId={id} />
     </PermissionGuard>
   );

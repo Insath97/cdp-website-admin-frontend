@@ -175,7 +175,7 @@ function CreateBlogContent() {
 
 export default function CreateBlogPage() {
   return (
-    <PermissionGuard permission="Blog Create">
+    <PermissionGuard permission="Event Create">
       <CreateBlogContent />
     </PermissionGuard>
   );

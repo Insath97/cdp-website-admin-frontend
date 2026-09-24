@@ -145,7 +145,7 @@ function BlogsContent() {
             Manage blog posts ({pagination.total} total)
           </p>
         </div>
-        {hasPermission("Blog Create") && (
+        {hasPermission("Event Create") && (
           <button
             onClick={() => router.push("/blogs/create")}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
@@ -266,7 +266,7 @@ function BlogsContent() {
                             >
                               <Eye className="h-4 w-4" /> View
                             </button>
-                            {hasPermission("Blog Update") && (
+                            {hasPermission("Event Update") && (
                               <button
                                 onClick={() => {
                                   router.push(`/blogs/${blog.id}/edit`);
@@ -277,7 +277,7 @@ function BlogsContent() {
                                 <Edit className="h-4 w-4" /> Edit
                               </button>
                             )}
-                            {hasPermission("Blog Delete") && (
+                            {hasPermission("Event Delete") && (
                               <button
                                 onClick={() => {
                                   setDeleteDialog({ open: true, blog });
@@ -389,7 +389,7 @@ function BlogsContent() {
 
 export default function BlogsPage() {
   return (
-    <PermissionGuard permission="Blog Index">
+    <PermissionGuard permission="Event Index">
       <BlogsContent />
     </PermissionGuard>
   );

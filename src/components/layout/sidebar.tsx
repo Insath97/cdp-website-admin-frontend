@@ -1,11 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   LogOut,
   Accessibility,
 } from "lucide-react";
@@ -37,6 +38,7 @@ function UserAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" })
 
 export function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, role, permissions, logout } = useAuthStore();
   const {
     sidebarOpen,
@@ -45,14 +47,67 @@ export function Sidebar() {
     setMobileSidebarOpen,
   } = useAppStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setMobileSidebarOpen(false);
   }, [pathname, setMobileSidebarOpen]);
 
-  const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
+  useEffect(() => {
+    const activeDropdown = filteredNavigation
+      .flatMap((g) => g.items)
+      .find((item) => item.children?.some((child) => isActive(child)));
+    if (activeDropdown) {
+      setOpenDropdowns((prev) => new Set(prev).add(activeDropdown.label));
+    }
+  }, [pathname, searchParams]);
+
+  const isActive = (item: { href: string; children?: { href: string }[] }) => {
+    // For items with children, check if any child is active
+    if (item.children) {
+      return item.children.some((child) => {
+        const childUrl = new URL(child.href, window.location.origin);
+        const childPath = childUrl.pathname;
+        const childPage = childUrl.searchParams.get("page");
+        if (childPage) {
+          return pathname === childPath && searchParams.get("page") === childPage;
+        }
+        if (childPath === "/dashboard") return pathname === "/dashboard";
+        return pathname.startsWith(childPath);
+      });
+    }
+    // For regular items
+    const url = new URL(item.href, window.location.origin);
+    const itemPath = url.pathname;
+    const itemPage = url.searchParams.get("page");
+    if (itemPage) {
+      return pathname === itemPath && searchParams.get("page") === itemPage;
+    }
+    if (itemPath === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(itemPath);
+  };
+
+  const isChildActive = (child: { href: string }) => {
+    const childUrl = new URL(child.href, window.location.origin);
+    const childPath = childUrl.pathname;
+    const childPage = childUrl.searchParams.get("page");
+    if (childPage) {
+      return pathname === childPath && searchParams.get("page") === childPage;
+    }
+    if (childPath === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(childPath);
+  };
+
+  const toggleDropdown = (label: string) => {
+    setOpenDropdowns((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
   };
 
   const filteredNavigation = navigation
@@ -113,7 +168,75 @@ export function Sidebar() {
             <ul className="space-y-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const active = isActive(item.href);
+                const active = isActive(item);
+                const hasChildren = item.children && item.children.length > 0;
+                const isDropdownOpen = openDropdowns.has(item.label);
+
+                if (hasChildren) {
+                  return (
+                    <li key={item.label}>
+                      <button
+                        onClick={() => toggleDropdown(item.label)}
+                        title={!sidebarOpen ? item.label : undefined}
+                        className={cn(
+                          "group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-all",
+                          "text-white/60 hover:bg-white/8 hover:text-white/90",
+                          !sidebarOpen && "justify-center px-0"
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "h-4 w-4 shrink-0 transition-colors",
+                            "text-white/50 group-hover:text-white/80"
+                          )}
+                        />
+                        {sidebarOpen && (
+                          <>
+                            <span className="flex-1 text-left">{item.label}</span>
+                            <ChevronDown
+                              className={cn(
+                                "h-4 w-4 shrink-0 text-white/40 transition-transform duration-200",
+                                isDropdownOpen && "rotate-180"
+                              )}
+                            />
+                          </>
+                        )}
+                      </button>
+                      {sidebarOpen && isDropdownOpen && (
+                        <ul className="ml-4 mt-0.5 space-y-0.5 border-l border-white/10 pl-3">
+                          {item.children!.map((child) => {
+                            const ChildIcon = child.icon;
+                            const childActive = isChildActive(child);
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  className={cn(
+                                    "group flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm font-medium transition-all",
+                                    childActive
+                                      ? "bg-white/15 text-white"
+                                      : "text-white/50 hover:bg-white/8 hover:text-white/80"
+                                  )}
+                                >
+                                  <ChildIcon
+                                    className={cn(
+                                      "h-3.5 w-3.5 shrink-0 transition-colors",
+                                      childActive
+                                        ? "text-white"
+                                        : "text-white/40 group-hover:text-white/70"
+                                    )}
+                                  />
+                                  <span>{child.label}</span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                }
+
                 return (
                   <li key={item.href}>
                     <Link

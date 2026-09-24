@@ -214,7 +214,7 @@ function EditBlogContent({ blogId }: { blogId: string }) {
 export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (
-    <PermissionGuard permission="Blog Update">
+    <PermissionGuard permission="Event Update">
       <EditBlogContent blogId={id} />
     </PermissionGuard>
   );
