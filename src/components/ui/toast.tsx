@@ -45,7 +45,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast: addToast }}>
       {children}
-      <div className="pointer-events-none fixed right-4 top-4 z-[100] flex flex-col gap-2">
+      <div
+        role="region"
+        aria-live="polite"
+        aria-label="Notifications"
+        className="pointer-events-none fixed right-4 top-4 z-[100] flex flex-col gap-2"
+      >
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onRemove={removeToast} />
         ))}
@@ -93,20 +98,23 @@ function ToastItem({
 
   return (
     <div
+      role={toast.variant === "error" ? "alert" : "status"}
+      aria-atomic="true"
       className={cn(
         "pointer-events-auto flex w-80 items-start gap-3 rounded-lg border p-4 shadow-lg animate-in slide-in-from-right-full",
         config.bg
       )}
     >
-      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", config.iconColor)} />
+      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", config.iconColor)} aria-hidden="true" />
       <p className={cn("flex-1 text-sm font-medium", config.text)}>
         {toast.message}
       </p>
       <button
         onClick={() => onRemove(toast.id)}
-        className={cn("shrink-0", config.text, "opacity-70 hover:opacity-100")}
+        aria-label="Dismiss notification"
+        className={cn("shrink-0 rounded focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-current", config.text, "opacity-70 hover:opacity-100")}
       >
-        <X className="h-4 w-4" />
+        <X className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   );

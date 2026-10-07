@@ -341,6 +341,14 @@ function ContactTypesContent() {
   }, [debouncedSearch, statusFilter, pagination.perPage, toast]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchContactTypes(1);
   }, [fetchContactTypes]);
 
@@ -466,8 +474,8 @@ function ContactTypesContent() {
             <p>No contact types found</p>
           </div>
         ) : (
-          <div>
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-x-auto touch-scroll">
+            <table className="w-full text-left text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Name</th>
@@ -511,9 +519,12 @@ function ContactTypesContent() {
                       <div className="relative inline-block">
                         <button
                           onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === ct.id ? null : ct.id); }}
+                          aria-label={`Open actions for ${ct.name}`}
+                          aria-expanded={actionMenuId === ct.id}
+                          aria-haspopup="menu"
                           className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         </button>
                         {actionMenuId === ct.id && (
                           <div className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -563,8 +574,10 @@ function ContactTypesContent() {
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="contact-types-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="contact-types-per-page"
+              aria-label="Contact types per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -579,10 +592,11 @@ function ContactTypesContent() {
             </select>
           </div>
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Contact types pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchContactTypes(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 « Prev
@@ -599,11 +613,13 @@ function ContactTypesContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">...</span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchContactTypes(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -617,11 +633,12 @@ function ContactTypesContent() {
               <button
                 onClick={() => fetchContactTypes(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next »
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>

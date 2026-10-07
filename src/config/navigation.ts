@@ -14,6 +14,8 @@ import {
   Target,
   Briefcase,
   FileText,
+  HelpCircle,
+  Award,
 } from "lucide-react";
 
 export interface NavItem {
@@ -48,6 +50,18 @@ export const navigation: NavGroup[] = [
         href: "/cms",
         icon: Globe,
         permission: "CMS Index",
+      },
+      {
+        label: "FAQs",
+        href: "/faqs",
+        icon: HelpCircle,
+        permission: "Faq Index",
+      },
+      {
+        label: "Award Types",
+        href: "/award-types",
+        icon: Award,
+        permission: "Award Type Index",
       },
     ],
   },

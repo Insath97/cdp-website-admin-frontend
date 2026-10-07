@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, RefreshCw } from "lucide-react";
@@ -80,7 +82,7 @@ function EditContactTypeContent({ contactTypeId }: { contactTypeId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">Update contact type information</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/contact-types" className="hover:text-primary">Contact Types</a>
+          <Link href="/contact-types" className="hover:text-primary">Contact Types</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Edit</span>
         </nav>

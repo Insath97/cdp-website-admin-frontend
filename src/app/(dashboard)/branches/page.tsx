@@ -194,6 +194,14 @@ function BranchesContent() {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchBranches(1);
   }, [fetchBranches]);
 
@@ -309,8 +317,8 @@ function BranchesContent() {
             <p>No branches found</p>
           </div>
         ) : (
-          <div>
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-x-auto touch-scroll">
+            <table className="w-full text-left text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Name</th>
@@ -326,7 +334,7 @@ function BranchesContent() {
                   <tr key={branch.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                           {branch.name.charAt(0).toUpperCase()}
                         </div>
                         <span className="font-medium text-text-primary dark:text-white">{branch.name}</span>
@@ -354,9 +362,12 @@ function BranchesContent() {
                       <div className="relative inline-block">
                         <button
                           onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === branch.id ? null : branch.id); }}
+                          aria-label={`Open actions for ${branch.name}`}
+                          aria-expanded={actionMenuId === branch.id}
+                          aria-haspopup="menu"
                           className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         </button>
                         {actionMenuId === branch.id && (
                           <div className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -412,8 +423,10 @@ function BranchesContent() {
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="branches-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="branches-per-page"
+              aria-label="Branches per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -428,10 +441,11 @@ function BranchesContent() {
             </select>
           </div>
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Branches pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchBranches(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 « Prev
@@ -448,11 +462,13 @@ function BranchesContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">...</span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchBranches(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -466,11 +482,12 @@ function BranchesContent() {
               <button
                 onClick={() => fetchBranches(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next »
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>

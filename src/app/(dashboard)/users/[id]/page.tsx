@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, RefreshCw } from "lucide-react";
@@ -51,7 +53,7 @@ function ViewUserContent({ userId }: { userId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">View user information</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/users" className="hover:text-primary">Users</a>
+          <Link href="/users" className="hover:text-primary">Users</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">View</span>
         </nav>

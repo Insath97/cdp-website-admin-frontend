@@ -128,12 +128,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   hasPermission: (permission: string) => {
-    const { permissions } = get();
+    const { permissions, role } = get();
+    if (role?.name === "Super Admin" || (role as any)?.slug === "super-admin") return true;
     return permissions.includes(permission);
   },
 
   hasAnyPermission: (perms: string[]) => {
-    const { permissions } = get();
+    const { permissions, role } = get();
+    if (role?.name === "Super Admin" || (role as any)?.slug === "super-admin") return true;
     return perms.some((p) => permissions.includes(p));
   },
 }));

@@ -206,6 +206,14 @@ function CareerApplicationsContent() {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchApplications(1);
   }, [fetchApplications]);
 
@@ -292,8 +300,8 @@ function CareerApplicationsContent() {
             <p>No applications found</p>
           </div>
         ) : (
-          <div>
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-x-auto touch-scroll">
+            <table className="w-full text-left text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Applicant</th>
@@ -336,9 +344,12 @@ function CareerApplicationsContent() {
                       <div className="relative inline-block">
                         <button
                           onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === app.id ? null : app.id); }}
+                          aria-label={`Open actions for application from ${app.fullname}`}
+                          aria-expanded={actionMenuId === app.id}
+                          aria-haspopup="menu"
                           className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         </button>
                         {actionMenuId === app.id && (
                           <div className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -369,8 +380,10 @@ function CareerApplicationsContent() {
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="applications-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="applications-per-page"
+              aria-label="Applications per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -385,10 +398,11 @@ function CareerApplicationsContent() {
             </select>
           </div>
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Applications pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchApplications(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 « Prev
@@ -405,11 +419,13 @@ function CareerApplicationsContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">...</span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchApplications(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -423,11 +439,12 @@ function CareerApplicationsContent() {
               <button
                 onClick={() => fetchApplications(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next »
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>

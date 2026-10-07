@@ -13,10 +13,13 @@ export interface Contact {
     name: string;
   };
   is_active: boolean;
-  is_replied: boolean;
-  reply?: string;
-  replied_at?: string;
+  is_replied?: boolean;
+  reply?: string | null;
+  status?: string;
+  replied_by?: number | null;
+  replied_at?: string | null;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface ContactListResponse {

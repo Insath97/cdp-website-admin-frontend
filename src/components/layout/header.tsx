@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Menu,
   Bell,
@@ -17,6 +17,7 @@ import { LogoutModal } from "./logout-modal";
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, role, logout } = useAuthStore();
   const { toggleMobileSidebar } = useAppStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -24,6 +25,24 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const getSearchConfig = () => {
+    if (pathname.startsWith("/blogs")) return { target: "/blogs", label: "Search blogs..." };
+    if (pathname.startsWith("/branches")) return { target: "/branches", label: "Search branches..." };
+    if (pathname.startsWith("/careers/applications")) return { target: "/careers/applications", label: "Search applications..." };
+    if (pathname.startsWith("/careers")) return { target: "/careers", label: "Search careers..." };
+    if (pathname.startsWith("/contacts")) return { target: "/contacts", label: "Search enquiries..." };
+    if (pathname.startsWith("/services")) return { target: "/services", label: "Search services..." };
+    if (pathname.startsWith("/plans")) return { target: "/plans", label: "Search plans..." };
+    if (pathname.startsWith("/roles")) return { target: "/roles", label: "Search roles..." };
+    if (pathname.startsWith("/contact-types")) return { target: "/contact-types", label: "Search contact types..." };
+    if (pathname.startsWith("/faqs")) return { target: "/faqs", label: "Search FAQs..." };
+    if (pathname.startsWith("/award-types")) return { target: "/award-types", label: "Search award categories..." };
+    if (pathname.startsWith("/audit-logs")) return { target: "/audit-logs", label: "Search audit logs..." };
+    return { target: "/users", label: "Search users, roles..." };
+  };
+
+  const searchConfig = getSearchConfig();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -60,7 +79,7 @@ export function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/users?search=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`${searchConfig.target}?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
     }
   };
@@ -91,7 +110,7 @@ export function Header() {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search users, roles..."
+              placeholder={searchConfig.label}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-9 w-full rounded-lg border border-border bg-background pl-9 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-primary"

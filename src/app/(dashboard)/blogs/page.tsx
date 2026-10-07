@@ -12,6 +12,11 @@ import {
   RefreshCw,
   X,
   FileText,
+  Send,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  Trash,
 } from "lucide-react";
 import { blogService } from "@/services";
 import { useAuthStore } from "@/lib/auth";
@@ -41,6 +46,17 @@ function BlogsContent() {
     blog: null,
   });
   const [deleting, setDeleting] = useState(false);
+  const [rejectDialog, setRejectDialog] = useState<{ open: boolean; blog: Blog | null; reason: string }>({
+    open: false,
+    blog: null,
+    reason: "",
+  });
+  const [forceDeleteDialog, setForceDeleteDialog] = useState<{ open: boolean; blog: Blog | null }>({
+    open: false,
+    blog: null,
+  });
+  const [rejecting, setRejecting] = useState(false);
+  const [forceDeleting, setForceDeleting] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   const fetchBlogs = useCallback(
@@ -54,7 +70,7 @@ function BlogsContent() {
         if (debouncedSearch) params.search = debouncedSearch;
         if (statusFilter) params.status = statusFilter;
 
-        const response = await blogService.getAll(params);
+        const response: any = await blogService.getAll(params);
 
         if (Array.isArray(response.data)) {
           setBlogs(response.data);
@@ -86,6 +102,14 @@ function BlogsContent() {
   );
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchBlogs(1);
   }, [fetchBlogs]);
 
@@ -106,6 +130,66 @@ function BlogsContent() {
       return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [actionMenuId]);
+
+  const handleSubmitForReview = async (blog: Blog) => {
+    try {
+      await blogService.submitForReview(blog.id);
+      toast("Blog submitted for review successfully", "success");
+      fetchBlogs(pagination.currentPage);
+    } catch {
+      toast("Failed to submit blog for review", "error");
+    }
+  };
+
+  const handleApprove = async (blog: Blog) => {
+    try {
+      await blogService.approve(blog.id);
+      toast("Blog approved successfully", "success");
+      fetchBlogs(pagination.currentPage);
+    } catch {
+      toast("Failed to approve blog", "error");
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectDialog.blog) return;
+    setRejecting(true);
+    try {
+      await blogService.reject(rejectDialog.blog.id, rejectDialog.reason);
+      toast("Blog rejected", "success");
+      setRejectDialog({ open: false, blog: null, reason: "" });
+      fetchBlogs(pagination.currentPage);
+    } catch {
+      toast("Failed to reject blog", "error");
+    } finally {
+      setRejecting(false);
+    }
+  };
+
+  const handleRestore = async (blog: Blog) => {
+    try {
+      await blogService.restore(blog.id);
+      toast("Blog restored successfully", "success");
+      fetchBlogs(pagination.currentPage);
+    } catch {
+      toast("Failed to restore blog", "error");
+    }
+  };
+
+  const handleForceDelete = async () => {
+    if (!forceDeleteDialog.blog) return;
+    setForceDeleting(true);
+    try {
+      await blogService.forceDelete(forceDeleteDialog.blog.id);
+      toast("Blog permanently purged", "success");
+      setForceDeleteDialog({ open: false, blog: null });
+      fetchBlogs(pagination.currentPage);
+    } catch {
+      toast("Failed to permanently delete blog", "error");
+    } finally {
+      setForceDeleting(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!deleteDialog.blog) return;
@@ -200,8 +284,8 @@ function BlogsContent() {
             <p>No blogs found</p>
           </div>
         ) : (
-          <div>
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-x-auto touch-scroll">
+            <table className="w-full text-left text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Title</th>
@@ -251,12 +335,15 @@ function BlogsContent() {
                             e.stopPropagation();
                             setActionMenuId(actionMenuId === blog.id ? null : blog.id);
                           }}
+                          aria-label={`Open actions for ${blog.title}`}
+                          aria-expanded={actionMenuId === blog.id}
+                          aria-haspopup="menu"
                           className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         </button>
                         {actionMenuId === blog.id && (
-                          <div className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                          <div className="absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
                             <button
                               onClick={() => {
                                 router.push(`/blogs/${blog.id}`);
@@ -308,8 +395,10 @@ function BlogsContent() {
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="blogs-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="blogs-per-page"
+              aria-label="Blogs per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -324,10 +413,11 @@ function BlogsContent() {
             </select>
           </div>
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Blogs pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchBlogs(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 &laquo; Prev
@@ -344,13 +434,15 @@ function BlogsContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">
                       ...
                     </span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchBlogs(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -364,11 +456,12 @@ function BlogsContent() {
               <button
                 onClick={() => fetchBlogs(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next &raquo;
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>
@@ -389,7 +482,7 @@ function BlogsContent() {
 
 export default function BlogsPage() {
   return (
-    <PermissionGuard permission="Blog Index">
+    <PermissionGuard permission="Event Index">
       <BlogsContent />
     </PermissionGuard>
   );

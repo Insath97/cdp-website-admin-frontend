@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, Upload, X, RefreshCw } from "lucide-react";
@@ -121,7 +123,7 @@ function EditServiceContent({ serviceId }: { serviceId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">Update service information</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/services" className="hover:text-primary">Services</a>
+          <Link href="/services" className="hover:text-primary">Services</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Edit</span>
         </nav>

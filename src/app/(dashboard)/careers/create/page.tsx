@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, Upload, X, Plus, Trash2, Briefcase } from "lucide-react";
@@ -172,7 +174,7 @@ function CreateCareerContent() {
           <p className="text-sm text-text-muted dark:text-gray-400">Add a new job posting</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/careers" className="hover:text-primary">Manage Jobs</a>
+          <Link href="/careers" className="hover:text-primary">Manage Jobs</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Create</span>
         </nav>

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2, Check, Search, X, RefreshCw } from "lucide-react";
@@ -120,7 +122,7 @@ function EditRoleContent({ roleId }: { roleId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">Update role and permission assignment</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/roles" className="hover:text-primary">Roles</a>
+          <Link href="/roles" className="hover:text-primary">Roles</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Edit</span>
         </nav>

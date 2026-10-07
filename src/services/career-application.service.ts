@@ -44,12 +44,12 @@ export const careerApplicationService = {
     return response.data.data;
   },
 
-  getById: async (id: string): Promise<CareerApplication> => {
+  getById: async (id: string | number): Promise<CareerApplication> => {
     const response = await apiClient.get(`/career-applications/${id}`);
     return response.data.data;
   },
 
-  updateStatus: async (id: string, status: string): Promise<CareerApplication> => {
+  updateStatus: async (id: string | number, status: string): Promise<CareerApplication> => {
     const response = await apiClient.patch(`/career-applications/${id}/status`, { status });
     return response.data.data;
   },

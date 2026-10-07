@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
-import { RefreshCw, Edit, ArrowLeft, Calendar, Tag, FileText } from "lucide-react";
+import { RefreshCw, Edit, ArrowLeft, Calendar, Tag, FileText, Send, CheckCircle2, XCircle, RotateCcw, Trash } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { blogService } from "@/services";
 import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/lib/auth";
@@ -15,6 +16,9 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
   const { hasPermission } = useAuthStore();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rejectDialog, setRejectDialog] = useState<{ open: boolean; reason: string }>({ open: false, reason: "" });
+  const [forceDeleteDialog, setForceDeleteDialog] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchBlog = useCallback(async () => {
     try {
@@ -32,6 +36,77 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
   useEffect(() => {
     fetchBlog();
   }, [fetchBlog]);
+
+  const handleSubmitForReview = async () => {
+    if (!blog) return;
+    try {
+      setActionLoading(true);
+      await blogService.submitForReview(blog.id);
+      toast("Blog submitted for review successfully", "success");
+      fetchBlog();
+    } catch {
+      toast("Failed to submit blog for review", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!blog) return;
+    try {
+      setActionLoading(true);
+      await blogService.approve(blog.id);
+      toast("Blog approved successfully", "success");
+      fetchBlog();
+    } catch {
+      toast("Failed to approve blog", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!blog) return;
+    try {
+      setActionLoading(true);
+      await blogService.reject(blog.id, rejectDialog.reason);
+      toast("Blog rejected", "success");
+      setRejectDialog({ open: false, reason: "" });
+      fetchBlog();
+    } catch {
+      toast("Failed to reject blog", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!blog) return;
+    try {
+      setActionLoading(true);
+      await blogService.restore(blog.id);
+      toast("Blog restored successfully", "success");
+      fetchBlog();
+    } catch {
+      toast("Failed to restore blog", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleForceDelete = async () => {
+    if (!blog) return;
+    try {
+      setActionLoading(true);
+      await blogService.forceDelete(blog.id);
+      toast("Blog permanently deleted", "success");
+      router.push("/blogs");
+    } catch {
+      toast("Failed to delete blog", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -65,7 +140,7 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">View blog post</p>
         </div>
         <div className="flex items-center gap-3">
-          {hasPermission("Blog Update") && (
+          {hasPermission("Event Update") && (
             <button
               onClick={() => router.push(`/blogs/${blog.id}/edit`)}
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
@@ -156,7 +231,7 @@ function ViewBlogContent({ blogId }: { blogId: string }) {
 export default function ViewBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (
-    <PermissionGuard permission="Blog Index">
+    <PermissionGuard permission="Event Index">
       <ViewBlogContent blogId={id} />
     </PermissionGuard>
   );

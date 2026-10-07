@@ -46,7 +46,7 @@ export const careerService = {
     return response.data.data;
   },
 
-  getById: async (id: string): Promise<Career> => {
+  getById: async (id: string | number): Promise<Career> => {
     const response = await apiClient.get(`/careers/${id}`);
     return response.data.data;
   },
@@ -58,27 +58,28 @@ export const careerService = {
     return response.data;
   },
 
-  update: async (id: string, data: FormData): Promise<Career> => {
+  update: async (id: string | number, data: FormData): Promise<Career> => {
+    data.append("_method", "PUT");
     const response = await apiClient.post(`/careers/${id}`, data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string | number): Promise<void> => {
     await apiClient.delete(`/careers/${id}`);
   },
 
-  forceDelete: async (id: string): Promise<void> => {
+  forceDelete: async (id: string | number): Promise<void> => {
     await apiClient.delete(`/careers/${id}/force-delete`);
   },
 
-  restore: async (id: string): Promise<Career> => {
+  restore: async (id: string | number): Promise<Career> => {
     const response = await apiClient.patch(`/careers/${id}/restore`);
     return response.data;
   },
 
-  toggleStatus: async (id: string): Promise<Career> => {
+  toggleStatus: async (id: string | number): Promise<Career> => {
     const response = await apiClient.patch(`/careers/${id}/toggle-status`);
     return response.data;
   },

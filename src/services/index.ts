@@ -12,6 +12,10 @@ export { activityLogService } from "./activity-log.service";
 export { careerService } from "./career.service";
 export { careerApplicationService } from "./career-application.service";
 export { blogService } from "./blog.service";
+export { cmsService } from "./cms.service";
+export { faqService } from "./faq.service";
+export { faqTypeService } from "./faq-type.service";
+export { awardTypeService } from "./award-type.service";
 
 export type {
   Branch,
@@ -84,3 +88,21 @@ export type {
   BlogListResponse,
   BlogQueryParams,
 } from "./blog.service";
+
+export type {
+  Faq,
+  FaqListResponse,
+  FaqQueryParams,
+} from "./faq.service";
+
+export type {
+  FaqType,
+  FaqTypeListResponse,
+  FaqTypeQueryParams,
+} from "./faq-type.service";
+
+export type {
+  AwardType,
+  AwardTypeListResponse,
+  AwardTypeQueryParams,
+} from "./award-type.service";

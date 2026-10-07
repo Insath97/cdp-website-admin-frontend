@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
@@ -82,7 +84,7 @@ function CreateServiceContent() {
           <p className="text-sm text-text-muted dark:text-gray-400">Add a new service</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/services" className="hover:text-primary">Services</a>
+          <Link href="/services" className="hover:text-primary">Services</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Create</span>
         </nav>

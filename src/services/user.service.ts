@@ -7,6 +7,8 @@ export interface User {
   role?: string;
   branch_id?: number;
   status?: "active" | "inactive";
+  is_active?: boolean;
+  profile_image?: string | null;
   created_at?: string;
 }
 
@@ -51,6 +53,29 @@ export const userService = {
 
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/users/${id}`);
+  },
+
+  activate: async (id: number): Promise<User> => {
+    const response = await apiClient.patch(`/users/${id}/activate`);
+    return response.data.data || response.data;
+  },
+
+  deactivate: async (id: number): Promise<User> => {
+    const response = await apiClient.patch(`/users/${id}/deactivate`);
+    return response.data.data || response.data;
+  },
+
+  updateProfileImage: async (id: number, file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append("profile_image", file);
+    const response = await apiClient.patch(`/users/${id}/profile-image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data.data || response.data;
+  },
+
+  removeProfileImage: async (id: number): Promise<void> => {
+    await apiClient.delete(`/users/${id}/profile-image`);
   },
 };
 

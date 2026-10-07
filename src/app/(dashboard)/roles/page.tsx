@@ -188,6 +188,14 @@ function RolesContent() {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchRoles(1);
   }, [fetchRoles]);
 
@@ -297,9 +305,12 @@ function RolesContent() {
                 <div className="relative">
                   <button
                     onClick={() => setActionMenuId(actionMenuId === role.id ? null : role.id)}
+                    aria-label={`Open actions for ${role.name}`}
+                    aria-expanded={actionMenuId === role.id}
+                    aria-haspopup="menu"
                     className="rounded p-1 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                   </button>
                   {actionMenuId === role.id && (
                     <div className="absolute right-0 top-full z-10 mt-1 w-40 rounded-lg border border-border bg-surface shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -349,8 +360,10 @@ function RolesContent() {
         {/* Right - Controls */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="roles-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="roles-per-page"
+              aria-label="Roles per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -366,10 +379,11 @@ function RolesContent() {
           </div>
 
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Roles pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchRoles(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 « Prev
@@ -388,11 +402,13 @@ function RolesContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">...</span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchRoles(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -406,11 +422,12 @@ function RolesContent() {
               <button
                 onClick={() => fetchRoles(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next »
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>

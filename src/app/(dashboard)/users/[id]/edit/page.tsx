@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2, Upload, X, ChevronDown, RefreshCw } from "lucide-react";
@@ -177,10 +179,16 @@ function EditUserContent({ userId }: { userId: string }) {
     }
   };
 
-  const removeImage = () => {
+  const removeImage = async () => {
     setProfileImage(null);
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    try {
+      await apiClient.delete(`/users/${userId}/profile-image`);
+      toast("Profile image removed", "success");
+    } catch {
+      // Local removal or not saved yet
+    }
   };
 
   const handleSubmit = async () => {
@@ -236,7 +244,7 @@ function EditUserContent({ userId }: { userId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">Update user information</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/users" className="hover:text-primary">Users</a>
+          <Link href="/users" className="hover:text-primary">Users</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">Edit</span>
         </nav>

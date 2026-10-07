@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw, Reply, MessageSquare, User, Mail, Tag, Clock, Send, Loader2 } from "lucide-react";
@@ -7,7 +9,7 @@ import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/lib/auth";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { contactService } from "@/services";
-import type { Contact } from "@/types";
+import type { Contact } from "@/services/contact.service";
 
 function ReplyModal({
   open,
@@ -162,7 +164,7 @@ function ViewContactContent({ contactId }: { contactId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">View contact message</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/contacts" className="hover:text-primary">Contacts</a>
+          <Link href="/contacts" className="hover:text-primary">Contacts</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">View</span>
         </nav>

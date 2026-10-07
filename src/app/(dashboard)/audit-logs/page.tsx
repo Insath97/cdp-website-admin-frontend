@@ -96,6 +96,14 @@ function AuditLogsContent() {
     };
   }, [searchQuery]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get("search");
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
+  }, []);
+
   // Fetch when debounced search or filters change
   useEffect(() => {
     fetchLogs(1);
@@ -275,8 +283,8 @@ function AuditLogsContent() {
             <p>No activity logs found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div className="w-full overflow-x-auto touch-scroll">
+            <table className="w-full text-left text-sm min-w-[800px]">
               <thead>
                 <tr className="border-b border-border dark:border-gray-700">
                   <th className="px-4 py-3 font-medium text-text-muted dark:text-gray-400">Date/Time</th>
@@ -339,8 +347,9 @@ function AuditLogsContent() {
                           onClick={() => viewDetail(log)}
                           className="rounded p-1 text-text-muted hover:bg-gray-100 hover:text-primary dark:hover:bg-gray-700"
                           title="View details"
+                          aria-label={`View details for activity log #${log.id}`}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4" aria-hidden="true" />
                         </button>
                       </td>
                     )}
@@ -364,8 +373,10 @@ function AuditLogsContent() {
         {/* Right - Controls */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted dark:text-gray-400">Show</span>
+            <label htmlFor="logs-per-page" className="text-xs text-text-muted dark:text-gray-400">Show</label>
             <select
+              id="logs-per-page"
+              aria-label="Activity logs per page"
               value={pagination.perPage}
               onChange={(e) => {
                 setPagination((prev) => ({ ...prev, perPage: Number(e.target.value) }));
@@ -381,10 +392,11 @@ function AuditLogsContent() {
           </div>
 
           {pagination.lastPage >= 1 && (
-            <div className="flex items-center gap-1">
+            <nav aria-label="Activity logs pagination" className="flex items-center gap-1">
               <button
                 onClick={() => fetchLogs(pagination.currentPage - 1)}
                 disabled={pagination.currentPage <= 1}
+                aria-label="Previous page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 « Prev
@@ -403,11 +415,13 @@ function AuditLogsContent() {
                 }, [])
                 .map((page, idx) =>
                   typeof page === "string" ? (
-                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500">...</span>
+                    <span key={`dots-${idx}`} className="px-1 text-xs text-text-muted dark:text-gray-500" aria-hidden="true">...</span>
                   ) : (
                     <button
                       key={page}
                       onClick={() => fetchLogs(page)}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={page === pagination.currentPage ? "page" : undefined}
                       className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
                         page === pagination.currentPage
                           ? "bg-primary text-white"
@@ -421,28 +435,30 @@ function AuditLogsContent() {
               <button
                 onClick={() => fetchLogs(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.lastPage}
+                aria-label="Next page"
                 className="flex h-8 items-center gap-1 rounded-md border border-border bg-surface px-3 text-xs font-medium text-text-muted hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 Next »
               </button>
-            </div>
+            </nav>
           )}
         </div>
       </div>
 
       {/* Detail Modal */}
       {showDetailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="activity-log-details-title">
           <div className="mx-4 w-full max-w-lg rounded-xl border border-border bg-surface p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary dark:text-white">
+              <h3 id="activity-log-details-title" className="text-lg font-semibold text-text-primary dark:text-white">
                 Activity Log Details
               </h3>
               <button
                 onClick={() => { setShowDetailModal(false); setSelectedLog(null); }}
+                aria-label="Close activity log details"
                 className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
 

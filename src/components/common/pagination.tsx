@@ -51,9 +51,10 @@ function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div
+    <nav
+      aria-label="Pagination Navigation"
       className={cn(
-        "flex items-center justify-between px-2 py-4",
+        "flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-4",
         className
       )}
     >
@@ -67,8 +68,9 @@ function Pagination({
           className="h-8 w-8"
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
+          aria-label="Go to first page"
         >
-          <ChevronsLeft className="h-4 w-4" />
+          <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
         <Button
           variant="outline"
@@ -76,14 +78,16 @@ function Pagination({
           className="h-8 w-8"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label="Go to previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
         {getPageNumbers().map((page, i) =>
           page === "..." ? (
             <span
               key={`ellipsis-${i}`}
               className="px-2 text-sm text-gray-500 dark:text-gray-400"
+              aria-hidden="true"
             >
               ...
             </span>
@@ -95,9 +99,11 @@ function Pagination({
               className={cn(
                 "h-8 w-8",
                 currentPage === page &&
-                  "bg-[#168B61] text-white hover:bg-[#0F684A]"
+                  "bg-primary text-white hover:bg-primary/90"
               )}
               onClick={() => onPageChange(page)}
+              aria-label={`Go to page ${page}`}
+              aria-current={currentPage === page ? "page" : undefined}
             >
               {page}
             </Button>
@@ -109,8 +115,9 @@ function Pagination({
           className="h-8 w-8"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          aria-label="Go to next page"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
         <Button
           variant="outline"
@@ -118,11 +125,12 @@ function Pagination({
           className="h-8 w-8"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
+          aria-label="Go to last page"
         >
-          <ChevronsRight className="h-4 w-4" />
+          <ChevronsRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
-    </div>
+    </nav>
   );
 }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw, Edit, Target, FileText, CheckCircle2, XCircle, List } from "lucide-react";
@@ -54,7 +56,7 @@ function ViewPlanContent({ planId }: { planId: string }) {
           <p className="text-sm text-text-muted dark:text-gray-400">View plan information</p>
         </div>
         <nav className="flex items-center gap-2 text-sm text-text-muted dark:text-gray-400">
-          <a href="/plans" className="hover:text-primary">Plans</a>
+          <Link href="/plans" className="hover:text-primary">Plans</Link>
           <span>/</span>
           <span className="text-text-primary dark:text-white">View</span>
         </nav>
