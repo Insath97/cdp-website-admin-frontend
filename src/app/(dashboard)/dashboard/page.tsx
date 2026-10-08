@@ -17,6 +17,7 @@ import {
   MapPin,
   ExternalLink,
   SlidersHorizontal,
+  Trophy,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import apiClient from "@/lib/api-client";
@@ -345,6 +346,20 @@ export default function DashboardPage() {
                 <div>
                   <p className="font-medium text-text-primary dark:text-white">Branches</p>
                   <p className="text-[10px] text-text-muted dark:text-gray-500">Network locations</p>
+                </div>
+              </button>
+            )}
+            {hasPermission("Award Index") && (
+              <button
+                onClick={() => router.push("/awards")}
+                className="flex items-center gap-3 rounded-lg border border-border bg-background p-3 text-left text-sm transition-colors hover:border-primary hover:bg-primary/5 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-900/30">
+                  <Trophy className="h-4 w-4 text-amber-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-text-primary dark:text-white">Awards</p>
+                  <p className="text-[10px] text-text-muted dark:text-gray-500">Recognition & stage</p>
                 </div>
               </button>
             )}

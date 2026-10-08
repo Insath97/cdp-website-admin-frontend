@@ -16,6 +16,7 @@ import {
   FileText,
   HelpCircle,
   Award,
+  Trophy,
 } from "lucide-react";
 
 export interface NavItem {
@@ -56,6 +57,12 @@ export const navigation: NavGroup[] = [
         href: "/faqs",
         icon: HelpCircle,
         permission: "Faq Index",
+      },
+      {
+        label: "Awards",
+        href: "/awards",
+        icon: Trophy,
+        permission: "Award Index",
       },
       {
         label: "Award Types",

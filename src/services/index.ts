@@ -16,6 +16,7 @@ export { cmsService } from "./cms.service";
 export { faqService } from "./faq.service";
 export { faqTypeService } from "./faq-type.service";
 export { awardTypeService } from "./award-type.service";
+export { awardService } from "./award.service";
 
 export type {
   Branch,
@@ -106,3 +107,10 @@ export type {
   AwardTypeListResponse,
   AwardTypeQueryParams,
 } from "./award-type.service";
+
+export type {
+  Award,
+  AwardGallery,
+  AwardListResponse,
+  AwardQueryParams,
+} from "./award.service";
