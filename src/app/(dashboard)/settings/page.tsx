@@ -170,6 +170,7 @@ function SettingsContent() {
 
       // 2. Persist locally for immediate availability
       if (typeof window !== "undefined") {
+        localStorage.setItem("cdp-server-default-theme", themeToSave);
         localStorage.setItem("cdp-website-theme", themeToSave);
         const resolved = themeToSave === "dark" ? "dark" : "light";
         localStorage.setItem("cdp-theme", resolved);
@@ -177,7 +178,7 @@ function SettingsContent() {
         // 3. Broadcast across tabs and windows
         try {
           const channel = new BroadcastChannel("cdp-theme-sync");
-          channel.postMessage({ theme: themeToSave, resolved });
+          channel.postMessage({ type: "server_default", theme: themeToSave, resolved });
           channel.close();
         } catch {
           // BroadcastChannel may not be available in all contexts
