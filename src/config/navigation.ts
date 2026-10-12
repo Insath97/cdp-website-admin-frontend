@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Award,
   Trophy,
+  UserCheck,
 } from "lucide-react";
 
 export interface NavItem {
@@ -50,6 +51,12 @@ export const navigation: NavGroup[] = [
         label: "CMS",
         href: "/cms",
         icon: Globe,
+        permission: "CMS Index",
+      },
+      {
+        label: "Leadership",
+        href: "/leadership",
+        icon: UserCheck,
         permission: "CMS Index",
       },
       {

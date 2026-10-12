@@ -6,14 +6,21 @@ import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
 
 type ToastVariant = "success" | "error" | "warning" | "info";
 
+export interface ToastOptions {
+  title?: string;
+  description?: string;
+  variant?: ToastVariant | "destructive";
+}
+
 interface Toast {
   id: string;
+  title?: string;
   message: string;
   variant: ToastVariant;
 }
 
 interface ToastContextType {
-  toast: (message: string, variant?: ToastVariant) => void;
+  toast: (messageOrOptions: string | ToastOptions, variant?: ToastVariant) => void;
 }
 
 const ToastContext = React.createContext<ToastContextType>({
@@ -28,9 +35,25 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
 
   const addToast = React.useCallback(
-    (message: string, variant: ToastVariant = "info") => {
+    (messageOrOptions: string | ToastOptions, variant: ToastVariant = "info") => {
       const id = Math.random().toString(36).substr(2, 9);
-      setToasts((prev) => [...prev, { id, message, variant }]);
+      let text = "";
+      let title: string | undefined;
+      let finalVariant: ToastVariant = variant;
+
+      if (typeof messageOrOptions === "object" && messageOrOptions !== null) {
+        title = messageOrOptions.title;
+        text = messageOrOptions.description || messageOrOptions.title || "";
+        if (messageOrOptions.variant === "destructive") {
+          finalVariant = "error";
+        } else if (messageOrOptions.variant) {
+          finalVariant = messageOrOptions.variant;
+        }
+      } else {
+        text = String(messageOrOptions ?? "");
+      }
+
+      setToasts((prev) => [...prev, { id, title, message: text, variant: finalVariant }]);
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 5000);
@@ -106,9 +129,16 @@ function ToastItem({
       )}
     >
       <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", config.iconColor)} aria-hidden="true" />
-      <p className={cn("flex-1 text-sm font-medium", config.text)}>
-        {toast.message}
-      </p>
+      <div className="flex-1">
+        {toast.title && (
+          <p className={cn("text-xs font-semibold mb-0.5", config.text)}>
+            {toast.title}
+          </p>
+        )}
+        <p className={cn("text-sm font-medium", config.text)}>
+          {toast.message}
+        </p>
+      </div>
       <button
         onClick={() => onRemove(toast.id)}
         aria-label="Dismiss notification"

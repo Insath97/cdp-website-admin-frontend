@@ -15,11 +15,17 @@ export interface DialogProps {
 function Dialog({ open, onClose, title, children, footer, className }: DialogProps) {
   const dialogRef = React.useRef<HTMLDivElement>(null);
 
+  const onCloseRef = React.useRef(onClose);
+  React.useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Handle keyboard navigation and trap focus
   React.useEffect(() => {
     if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === "Tab" && dialogRef.current) {
@@ -42,12 +48,11 @@ function Dialog({ open, onClose, title, children, footer, className }: DialogPro
     document.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
 
-    // Set initial focus
-    setTimeout(() => {
-      if (dialogRef.current) {
-        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
+    // Set initial focus only on mount/open, and only if focus is not already inside the dialog
+    const timer = setTimeout(() => {
+      if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
+        const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(focusableSelectors);
         if (focusables.length > 0) {
           focusables[0].focus();
         } else {
@@ -57,10 +62,11 @@ function Dialog({ open, onClose, title, children, footer, className }: DialogPro
     }, 50);
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

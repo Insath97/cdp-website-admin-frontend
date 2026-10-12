@@ -17,7 +17,13 @@ export { faqService } from "./faq.service";
 export { faqTypeService } from "./faq-type.service";
 export { awardTypeService } from "./award-type.service";
 export { awardService } from "./award.service";
+export { leadershipService } from "./leadership.service";
 
+export type {
+  LeadershipMember,
+  LeadershipCategory,
+  LeadershipTier,
+} from "./leadership.service";
 export type {
   Branch,
   BranchListResponse,
