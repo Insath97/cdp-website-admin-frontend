@@ -814,9 +814,11 @@ export default function LeadershipPage() {
                 }`}
               >
                 <Quote className="h-3.5 w-3.5" />
-                <span>3. Statement & Biography</span>
-                {form.message && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Statement provided" />
+                <span>
+                  {form.tier === "founder" ? "3. Statement & Message" : "3. Statement & Biography"}
+                </span>
+                {(form.message || form.bio) && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Content provided" />
                 )}
               </button>
             </div>
@@ -1137,21 +1139,29 @@ export default function LeadershipPage() {
                           htmlFor="leader-message"
                           className="block text-xs font-semibold text-text-primary dark:text-white"
                         >
-                          Executive Statement / Quote (Shown on Card Hover)
+                          {form.tier === "founder"
+                            ? "Founder & Chairman Headline Quote / Core Statement"
+                            : "Executive Statement / Quote (Shown on Card Hover)"}
                         </label>
                         <span className="text-[11px] text-text-muted">
                           {form.message ? `${form.message.length} characters` : "Optional"}
                         </span>
                       </div>
                       <p className="text-[11px] text-text-muted mb-1.5">
-                        Inspirational quote or vision statement revealed when visitors hover over this card on the public website.
+                        {form.tier === "founder"
+                          ? "Primary headline quote displayed prominently beneath 'A Message from Our Chairman' on the Leadership page."
+                          : "Inspirational quote or vision statement revealed when visitors hover over this card on the public website."}
                       </p>
                       <textarea
                         id="leader-message"
-                        rows={2}
+                        rows={form.tier === "founder" ? 3 : 2}
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
-                        placeholder="e.g. Translating board governance into operational rigor on every hectare..."
+                        placeholder={
+                          form.tier === "founder"
+                            ? "e.g. When we founded Ceylon Development Plantation, our conviction was rooted in a foundational truth..."
+                            : "e.g. Translating board governance into operational rigor on every hectare..."
+                        }
                         className="w-full text-xs rounded-lg border border-border bg-surface p-2.5 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                       />
 
@@ -1160,7 +1170,11 @@ export default function LeadershipPage() {
                         <div className="mt-2.5 p-3 rounded-lg bg-emerald-950 text-white border border-emerald-800/80 shadow-xs">
                           <div className="flex items-center gap-1.5 text-amber-300 text-[10px] font-semibold uppercase tracking-wider mb-1">
                             <Quote className="h-3 w-3" />
-                            <span>Live Card Hover Statement Preview</span>
+                            <span>
+                              {form.tier === "founder"
+                                ? "Live Headline Quote Preview"
+                                : "Live Card Hover Statement Preview"}
+                            </span>
                           </div>
                           <p className="text-xs italic text-emerald-100 line-clamp-3 leading-relaxed">
                             &ldquo;{form.message}&rdquo;
@@ -1175,23 +1189,44 @@ export default function LeadershipPage() {
                           htmlFor="leader-bio"
                           className="block text-xs font-semibold text-text-primary dark:text-white"
                         >
-                          Professional Biography
+                          {form.tier === "founder"
+                            ? "Chairman's Official Message / Letter Paragraphs"
+                            : "Professional Biography"}
                         </label>
                         <span className="text-[11px] text-text-muted">
                           {form.bio ? `${form.bio.length} characters` : "Optional"}
                         </span>
                       </div>
                       <p className="text-[11px] text-text-muted mb-1.5">
-                        Comprehensive career track record, sector experience, and governance mandate.
+                        {form.tier === "founder"
+                          ? "Enter the body paragraphs for the Chairman's official statement on the Leadership page. Separate distinct paragraphs with a blank line (double enter). If left empty, only the headline quote above will be shown."
+                          : "Comprehensive career track record, sector experience, and governance mandate."}
                       </p>
                       <textarea
                         id="leader-bio"
-                        rows={3}
+                        rows={form.tier === "founder" ? 6 : 3}
                         value={form.bio}
                         onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                        placeholder="Comprehensive overview of executive background and agricultural stewardship..."
+                        placeholder={
+                          form.tier === "founder"
+                            ? "Enter paragraph 1...\n\nEnter paragraph 2...\n\nEnter paragraph 3..."
+                            : "Comprehensive overview of executive background and agricultural stewardship..."
+                        }
                         className="w-full text-xs rounded-lg border border-border bg-surface p-2.5 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                       />
+
+                      {form.tier === "founder" && form.bio && (
+                        <div className="mt-2.5 p-3 rounded-lg bg-background-50 dark:bg-gray-800/80 border border-border text-text-primary text-xs space-y-2">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary block">
+                            Live Paragraphs Preview ({form.bio.split(/\n\s*\n/).filter(Boolean).length} paragraph{form.bio.split(/\n\s*\n/).filter(Boolean).length === 1 ? "" : "s"})
+                          </span>
+                          {form.bio.split(/\n\s*\n/).filter(Boolean).map((p, idx) => (
+                            <p key={idx} className="text-text-muted text-[11px] leading-relaxed">
+                              {p}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
