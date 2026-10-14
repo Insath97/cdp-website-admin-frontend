@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
 import {
   Trophy,
+  Award as AwardIcon,
   Plus,
   Search,
   MoreVertical,
@@ -13,11 +14,8 @@ import {
   Eye,
   LayoutGrid,
   Table as TableIcon,
-  Calendar,
   Building,
   Image as ImageIcon,
-  CheckCircle2,
-  XCircle,
   Camera,
   X,
   UploadCloud,
@@ -38,164 +36,51 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 
-// Fallback initial sample awards for Dashboard preview and resilient display
-const sampleDashboardAwards: Award[] = [
-  {
-    id: 1,
-    award_type_id: 1,
-    title: "Agri-Business of the Year — Plantation",
-    slug: "agri-business-of-the-year-plantation",
-    short_description: "Asia Agri-Business Council",
-    description:
-      "Conferred at the annual Asia Agri-Business Summit in recognition of exceptional operational scale, modern estate governance, and sustainable supply-chain integration across Sri Lanka's tea and coconut plantations. The award acknowledges CDP's leadership in disciplined agro-enterprise practices and transparent stakeholder value creation.",
-    verified: true,
-    is_active: true,
-    thumbnail_image:
-      "https://readdy.ai/api/search-image?query=A%20gleaming%20golden%20trophy%20cup%20award%20on%20a%20clean%20warm%20cream%20studio%20background%2C%20soft%20directional%20lighting%2C%20minimal%20editorial%20product%20photography%2C%20elegant%20premium%20mood%2C%20high%20detail&width=800&height=600&seq=cdp-award-01&orientation=landscape",
-    award_type: { id: 1, name: "Agri-Business", slug: "agri-business", is_active: true },
-    galleries: [
-      {
-        id: 101,
-        award_id: 1,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Sri%20Lankan%20plantation%20company%20team%20walking%20onto%20an%20award%20ceremony%20stage%20to%20receive%20a%20golden%20trophy%20from%20a%20presenter%2C%20warm%20stage%20lighting%2C%20formal%20elegant%20event%20photography%2C%20applause%20and%20celebration%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-01&orientation=landscape",
-        caption: "CDP executive delegation taking the grand stage to receive the Agri-Business of the Year trophy.",
-      },
-      {
-        id: 102,
-        award_id: 1,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Sri%20Lankan%20business%20leader%20speaking%20at%20a%20podium%20at%20an%20award%20ceremony%20while%20holding%20an%20award%2C%20warm%20stage%20lighting%2C%20audience%20in%20soft%20focus%2C%20editorial%20event%20photography%2C%20confident%20uplifting%20mood%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-02&orientation=landscape",
-        caption: "Executive address delivered at the summit podium detailing Sri Lankan sustainable plantation models.",
-      },
-      {
-        id: 103,
-        award_id: 1,
-        image_path:
-          "https://readdy.ai/api/search-image?query=A%20group%20of%20Sri%20Lankan%20colleagues%20standing%20together%20on%20an%20award%20stage%20holding%20a%20golden%20trophy%20and%20certificates%2C%20proud%20smiles%2C%20warm%20stage%20lighting%2C%20formal%20event%20photography%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-04&orientation=landscape",
-        caption: "Estate operational leaders and corporate management gathered on stage with the award trophy.",
-      },
-      {
-        id: 104,
-        award_id: 1,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Close%20up%20of%20a%20polished%20golden%20trophy%20on%20an%20award%20ceremony%20stage%20with%20blurred%20spotlights%20and%20an%20audience%20behind%2C%20warm%20dramatic%20lighting%2C%20premium%20editorial%20photography%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-05&orientation=landscape",
-        caption: "The 2024 Agri-Business of the Year golden trophy illuminated under the stage lights.",
-      },
-    ],
-    created_at: "2024-11-14T10:00:00Z",
-  },
-  {
-    id: 2,
-    award_type_id: 2,
-    title: "Excellence in Sustainable Cultivation",
-    slug: "excellence-in-sustainable-cultivation",
-    short_description: "Southern Agri Excellence Forum",
-    description:
-      "Conferred in recognition of pioneer water-conservation architectures, organic soil remediation protocols, and biodiversity conservation across dry-zone plantation acreage. The forum commended CDP's zero-chemical-runoff buffer zones and regenerative tree cover practices.",
-    verified: true,
-    is_active: true,
-    thumbnail_image:
-      "https://readdy.ai/api/search-image?query=An%20elegant%20framed%20certificate%20of%20excellence%20with%20a%20gold%20wax%20seal%20on%20a%20clean%20warm%20neutral%20studio%20background%2C%20soft%20light%2C%20minimal%20editorial%20photography%2C%20premium%20credible%20mood%2C%20high%20detail&width=800&height=600&seq=cdp-award-02&orientation=landscape",
-    award_type: { id: 2, name: "Sustainability", slug: "sustainability", is_active: true },
-    galleries: [
-      {
-        id: 201,
-        award_id: 2,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Two%20people%20shaking%20hands%20while%20exchanging%20a%20framed%20award%20certificate%20on%20an%20award%20ceremony%20stage%2C%20warm%20spotlights%2C%20formal%20elegant%20event%20photography%2C%20respectful%20celebratory%20mood%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-06&orientation=landscape",
-        caption: "Conferral and handshake on stage as the Certificate of Excellence is handed to CDP representatives.",
-      },
-      {
-        id: 202,
-        award_id: 2,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Audience%20applauding%20at%20an%20elegant%20award%20ceremony%20in%20a%20warm%20lit%20hall%2C%20rows%20of%20seated%20guests%20clapping%2C%20editorial%20event%20photography%2C%20celebratory%20warm%20golden%20tones%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-03&orientation=landscape",
-        caption: "Audience and delegates applauding the sustainability presentation at the forum hall.",
-      },
-      {
-        id: 203,
-        award_id: 2,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Sri%20Lankan%20business%20leader%20speaking%20at%20a%20podium%20at%20an%20award%20ceremony%20while%20holding%20an%20award%2C%20warm%20stage%20lighting%2C%20audience%20in%20soft%20focus%2C%20editorial%20event%20photography%2C%20confident%20uplifting%20mood%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-02&orientation=landscape",
-        caption: "CDP sustainability lead presenting ecological soil regeneration findings at the forum podium.",
-      },
-    ],
-    created_at: "2023-09-22T10:00:00Z",
-  },
-  {
-    id: 3,
-    award_type_id: 3,
-    title: "Rural Community Impact Award",
-    slug: "rural-community-impact-award",
-    short_description: "Planters' Development Foundation",
-    description:
-      "Awarded for CDP's long-standing investments in smallholder outgrower families, farmer training centers, clean drinking water access, and local community infrastructure around our estate clusters. The foundation highlighted the direct social mobility fostered across rural farming communities.",
-    verified: true,
-    is_active: true,
-    thumbnail_image:
-      "https://readdy.ai/api/search-image?query=A%20polished%20gold%20medal%20with%20a%20ribbon%20resting%20on%20a%20clean%20warm%20neutral%20surface%2C%20soft%20studio%20lighting%2C%20minimal%20editorial%20product%20photography%2C%20elegant%20premium%20mood%2C%20high%20detail&width=800&height=600&seq=cdp-award-03&orientation=landscape",
-    award_type: { id: 3, name: "Community", slug: "community", is_active: true },
-    galleries: [
-      {
-        id: 301,
-        award_id: 3,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Sri%20Lankan%20plantation%20company%20team%20walking%20onto%20an%20award%20ceremony%20stage%20to%20receive%20a%20golden%20trophy%20from%20a%20presenter%2C%20warm%20stage%20lighting%2C%20formal%20elegant%20event%20photography%2C%20applause%20and%20celebration%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-01&orientation=landscape",
-        caption: "Foundation trustees presenting the Rural Community Impact medal and scroll to CDP community coordinators.",
-      },
-      {
-        id: 302,
-        award_id: 3,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Sri%20Lankan%20business%20leader%20speaking%20at%20a%20podium%20at%20an%20award%20ceremony%20while%20holding%20an%20award%2C%20warm%20stage%20lighting%2C%20audience%20in%20soft%20focus%2C%20editorial%20event%20photography%2C%20confident%20uplifting%20mood%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-02&orientation=landscape",
-        caption: "Community relations officer sharing field stories and farmer training milestones with the audience.",
-      },
-    ],
-    created_at: "2023-06-18T10:00:00Z",
-  },
-  {
-    id: 4,
-    award_type_id: 4,
-    title: "Innovation in Precision Agriculture",
-    slug: "innovation-in-precision-agriculture",
-    short_description: "National AgTech Review",
-    description:
-      "Presented for trailblazing precision technology deployment across plantation agriculture. Recognised implementations include solar IoT soil probes, drone multispectral canopy monitoring, predictive harvest yield models, and automated resource conservation dashboards.",
-    verified: true,
-    is_active: true,
-    thumbnail_image:
-      "https://readdy.ai/api/search-image?query=A%20modern%20glass%20and%20gold%20award%20plaque%20standing%20on%20a%20clean%20warm%20cream%20background%2C%20soft%20directional%20studio%20light%2C%20minimal%20editorial%20photography%2C%20premium%20credible%20mood%2C%20high%20detail&width=800&height=600&seq=cdp-award-04&orientation=landscape",
-    award_type: { id: 4, name: "Innovation", slug: "innovation", is_active: true },
-    galleries: [
-      {
-        id: 401,
-        award_id: 4,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Two%20people%20shaking%20hands%20while%20exchanging%20a%20framed%20award%20certificate%20on%20an%20award%20ceremony%20stage%2C%20warm%20spotlights%2C%20formal%20elegant%20event%20photography%2C%20respectful%20celebratory%20mood%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-06&orientation=landscape",
-        caption: "Ministry of Technology and AgTech Review delegates handing over the Innovation trophy.",
-      },
-      {
-        id: 402,
-        award_id: 4,
-        image_path:
-          "https://readdy.ai/api/search-image?query=Close%20up%20of%20a%20polished%20golden%20trophy%20on%20an%20award%20ceremony%20stage%20with%20blurred%20spotlights%20and%20an%20audience%20behind%2C%20warm%20dramatic%20lighting%2C%20premium%20editorial%20photography%2C%20high%20detail&width=1600&height=1000&seq=cdp-ceremony-05&orientation=landscape",
-        caption: "The crystal glass Innovation plaque under the auditorium exhibition lighting.",
-      },
-    ],
-    created_at: "2022-10-05T10:00:00Z",
-  },
-];
+// Helper to resolve backend image paths to fully qualified storage URLs
+const resolveImageUrl = (path?: string): string => {
+  if (!path) return "";
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://") ||
+    path.startsWith("blob:") ||
+    path.startsWith("data:")
+  ) {
+    return path;
+  }
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/v1\/?$/, "") ||
+    "http://localhost:8000";
+  const cleanPath = path.replace(/^\/+/, "");
+  if (cleanPath.startsWith("uploads/") || cleanPath.startsWith("storage/")) {
+    return `${baseUrl}/${cleanPath}`;
+  }
+  return `${baseUrl}/uploads/${cleanPath}`;
+};
 
-export default function AwardsPage() {
+export default function UnifiedAwardsPage() {
   const { toast } = useToast();
   const perPageSelectId = useId();
+  const categoryPerPageSelectId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  // View state: 'cards' or 'table'
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  // Tab State: "awards" or "categories"
+  const [activeTab, setActiveTab] = useState<"awards" | "categories">("awards");
 
+  // Read URL query parameter on mount (e.g. /awards?tab=categories)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam === "categories") {
+      setActiveTab("categories");
+    }
+  }, []);
+
+  // -------------------------------------------------------------
+  // AWARDS STATE
+  // -------------------------------------------------------------
+  // Default to standard table view matching admin modules
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const [awards, setAwards] = useState<Award[]>([]);
   const [awardTypes, setAwardTypes] = useState<AwardType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -204,7 +89,7 @@ export default function AwardsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [perPage, setPerPage] = useState(12);
+  const [perPage, setPerPage] = useState(15);
   const [apiErrorNote, setApiErrorNote] = useState<string | null>(null);
 
   // Extended view modal (Award details & stage moments gallery)
@@ -243,7 +128,7 @@ export default function AwardsPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [extendedAward]);
 
-  // Create / Edit modal state
+  // Create / Edit modal state for Award
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAward, setEditingAward] = useState<Award | null>(null);
   const [form, setForm] = useState({
@@ -256,11 +141,15 @@ export default function AwardsPage() {
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
-  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
-  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+
+  // Gallery state: clearly separate existing saved galleries from newly selected file uploads
+  const [existingGalleries, setExistingGalleries] = useState<AwardGallery[]>([]);
+  const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
+  const [newGalleryPreviews, setNewGalleryPreviews] = useState<string[]>([]);
+  const [deletedGalleryIds, setDeletedGalleryIds] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // Delete State
+  // Delete State for Award
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Award | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -268,17 +157,61 @@ export default function AwardsPage() {
   // Action dropdown state for table view
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
-  // Load Award Types for categories dropdown and filter
-  useEffect(() => {
-    awardTypeService
-      .getList()
-      .then((types) => {
-        if (types && types.length > 0) setAwardTypes(types);
-      })
-      .catch(() => {});
+  // -------------------------------------------------------------
+  // CATEGORIES STATE
+  // -------------------------------------------------------------
+  const [categoryList, setCategoryList] = useState<AwardType[]>([]);
+  const [categoryLoading, setCategoryLoading] = useState(true);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [categoryCurrentPage, setCategoryCurrentPage] = useState(1);
+  const [categoryTotalPages, setCategoryTotalPages] = useState(1);
+  const [categoryTotalCount, setCategoryTotalCount] = useState(0);
+  const [categoryPerPage, setCategoryPerPage] = useState(15);
+  const [categoryDropdownId, setCategoryDropdownId] = useState<number | null>(null);
+
+  // Full Category Create / Edit Modal
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<AwardType | null>(null);
+  const [categoryForm, setCategoryForm] = useState({
+    name: "",
+    slug: "",
+    description: "",
+    is_active: true,
+  });
+  const [categorySaving, setCategorySaving] = useState(false);
+
+  // Delete State for Category
+  const [categoryDeleteConfirmOpen, setCategoryDeleteConfirmOpen] = useState(false);
+  const [categoryDeleteTarget, setCategoryDeleteTarget] = useState<AwardType | null>(null);
+  const [categoryDeleting, setCategoryDeleting] = useState(false);
+
+  // Quick Add Category Modal (inside Award Create / Edit form)
+  const [quickAddCategoryOpen, setQuickAddCategoryOpen] = useState(false);
+  const [quickAddForm, setQuickAddForm] = useState({
+    name: "",
+    description: "",
+  });
+  const [quickAddSaving, setQuickAddSaving] = useState(false);
+
+  // -------------------------------------------------------------
+  // DATA FETCHING FUNCTIONS
+  // -------------------------------------------------------------
+  const refreshCategoryOptions = useCallback(async () => {
+    try {
+      const types = await awardTypeService.getList();
+      if (types && types.length > 0) {
+        setAwardTypes(types);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
-  // Fetch awards from API, fallback to sample awards if DB table not yet migrated
+  useEffect(() => {
+    refreshCategoryOptions();
+  }, [refreshCategoryOptions]);
+
+  // Fetch awards list
   const fetchAwards = useCallback(async () => {
     try {
       setLoading(true);
@@ -295,68 +228,68 @@ export default function AwardsPage() {
         setTotalPages(res.meta?.last_page || 1);
         setTotalCount(res.meta?.total || res.data.length);
       } else {
-        // Filter sample awards if API returns empty
-        const filtered = sampleDashboardAwards.filter((a) => {
-          const matchSearch = search
-            ? a.title.toLowerCase().includes(search.toLowerCase()) ||
-              (a.short_description && a.short_description.toLowerCase().includes(search.toLowerCase()))
-            : true;
-          const matchCategory =
-            selectedCategory === "All" ||
-            a.award_type?.name.toLowerCase() === selectedCategory.toLowerCase() ||
-            String(a.award_type_id) === String(selectedCategory);
-          return matchSearch && matchCategory;
-        });
-        setAwards(filtered);
+        setAwards([]);
         setTotalPages(1);
-        setTotalCount(filtered.length);
+        setTotalCount(0);
       }
     } catch {
-      // Graceful fallback to rich sample awards so the Dashboard is always functional
-      const filtered = sampleDashboardAwards.filter((a) => {
-        const matchSearch = search
-          ? a.title.toLowerCase().includes(search.toLowerCase()) ||
-            (a.short_description && a.short_description.toLowerCase().includes(search.toLowerCase()))
-          : true;
-        const matchCategory =
-          selectedCategory === "All" ||
-          a.award_type?.name.toLowerCase() === selectedCategory.toLowerCase() ||
-          String(a.award_type_id) === String(selectedCategory);
-        return matchSearch && matchCategory;
-      });
-      setAwards(filtered);
+      setAwards([]);
       setTotalPages(1);
-      setTotalCount(filtered.length);
-      setApiErrorNote("Connected to Awards API (Database table migration is pending in backend; displaying mock awards)");
+      setTotalCount(0);
+      setApiErrorNote("Unable to fetch awards from backend service.");
     } finally {
       setLoading(false);
     }
   }, [currentPage, perPage, search, selectedCategory]);
 
   useEffect(() => {
-    fetchAwards();
-  }, [fetchAwards]);
+    if (activeTab === "awards") {
+      fetchAwards();
+    }
+  }, [activeTab, fetchAwards]);
 
-  // Reset gallery index when extended award changes
+  // Fetch full category list for categories tab
+  const fetchCategories = useCallback(async () => {
+    try {
+      setCategoryLoading(true);
+      const res = await awardTypeService.getAll({
+        page: categoryCurrentPage,
+        per_page: categoryPerPage,
+        search: categorySearch || undefined,
+      });
+      setCategoryList(res.data);
+      setCategoryTotalPages(res.meta?.last_page || 1);
+      setCategoryTotalCount(res.meta?.total || res.data.length);
+    } catch {
+      toast("Failed to load award categories", "error");
+    } finally {
+      setCategoryLoading(false);
+    }
+  }, [categoryCurrentPage, categoryPerPage, categorySearch, toast]);
+
   useEffect(() => {
-    setGalleryIndex(0);
-  }, [extendedAward?.id]);
+    if (activeTab === "categories") {
+      fetchCategories();
+    }
+  }, [activeTab, fetchCategories]);
 
-  const handleToggleStatus = async (award: Award) => {
+  // -------------------------------------------------------------
+  // AWARDS ACTIONS
+  // -------------------------------------------------------------
+  const handleToggleAwardStatus = async (award: Award) => {
     try {
       await awardService.toggleStatus(award.id);
       toast("Award status updated", "success");
       fetchAwards();
     } catch {
-      // Local optimistic toggle for preview
       setAwards((prev) =>
         prev.map((a) => (a.id === award.id ? { ...a, is_active: !a.is_active } : a))
       );
-      toast("Award status toggled (local preview)", "success");
+      toast("Award status toggled", "success");
     }
   };
 
-  const openCreateModal = () => {
+  const openCreateAwardModal = () => {
     setEditingAward(null);
     setForm({
       title: "",
@@ -368,12 +301,14 @@ export default function AwardsPage() {
     });
     setThumbnailFile(null);
     setThumbnailPreview("");
-    setGalleryFiles([]);
-    setGalleryPreviews([]);
+    setExistingGalleries([]);
+    setNewGalleryFiles([]);
+    setNewGalleryPreviews([]);
+    setDeletedGalleryIds([]);
     setModalOpen(true);
   };
 
-  const openEditModal = (award: Award) => {
+  const openEditAwardModal = (award: Award) => {
     setEditingAward(award);
     setForm({
       title: award.title,
@@ -384,9 +319,11 @@ export default function AwardsPage() {
       is_active: award.is_active,
     });
     setThumbnailFile(null);
-    setThumbnailPreview(award.thumbnail_image || "");
-    setGalleryFiles([]);
-    setGalleryPreviews(award.galleries?.map((g) => g.image_path) || []);
+    setThumbnailPreview(resolveImageUrl(award.thumbnail_image));
+    setExistingGalleries(award.galleries || []);
+    setNewGalleryFiles([]);
+    setNewGalleryPreviews([]);
+    setDeletedGalleryIds([]);
     setModalOpen(true);
   };
 
@@ -400,639 +337,1081 @@ export default function AwardsPage() {
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      setGalleryFiles((prev) => [...prev, ...files]);
-      const newPreviews = files.map((f) => URL.createObjectURL(f));
-      setGalleryPreviews((prev) => [...prev, ...newPreviews]);
+    if (files.length === 0) return;
+
+    setNewGalleryFiles((prev) => [...prev, ...files]);
+    const previews = files.map((f) => URL.createObjectURL(f));
+    setNewGalleryPreviews((prev) => [...prev, ...previews]);
+
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = "";
     }
   };
 
-  const removeGalleryPreview = (index: number) => {
-    setGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
-    setGalleryFiles((prev) => prev.filter((_, i) => i !== index));
+  const removeExistingGallery = (id: number) => {
+    setExistingGalleries((prev) => prev.filter((g) => g.id !== id));
+    setDeletedGalleryIds((prev) => [...prev, id]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const removeNewGalleryPreview = (index: number) => {
+    setNewGalleryFiles((prev) => prev.filter((_, i) => i !== index));
+    setNewGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitAward = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
-      toast("Award title is required", "error");
+      toast("Award title is required", "warning");
+      return;
+    }
+    if (!form.award_type_id) {
+      toast("Please select an award category", "warning");
       return;
     }
 
     try {
       setSaving(true);
-      const fd = new FormData();
-      fd.append("title", form.title);
-      if (form.slug) fd.append("slug", form.slug);
-      if (form.award_type_id) fd.append("award_type_id", form.award_type_id);
-      fd.append("short_description", form.short_description);
-      fd.append("description", form.description);
-      fd.append("is_active", form.is_active ? "1" : "0");
+      const formData = new FormData();
+      formData.append("title", form.title.trim());
 
-      if (thumbnailFile) {
-        fd.append("thumbnail_image", thumbnailFile);
+      const slugVal =
+        form.slug.trim() ||
+        form.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+      if (slugVal) {
+        formData.append("slug", slugVal);
       }
 
-      galleryFiles.forEach((file) => {
-        fd.append("galleries[]", file);
-      });
+      formData.append("award_type_id", String(form.award_type_id));
+      if (form.short_description) {
+        formData.append("short_description", form.short_description);
+      }
+      if (form.description) {
+        formData.append("description", form.description);
+      }
+      formData.append("is_active", form.is_active ? "1" : "0");
+      formData.append("verified", "1");
+
+      if (thumbnailFile) {
+        formData.append("thumbnail_image", thumbnailFile);
+      }
+
+      if (newGalleryFiles.length > 0) {
+        newGalleryFiles.forEach((file) => {
+          formData.append("galleries[]", file);
+        });
+      }
 
       if (editingAward) {
-        await awardService.update(editingAward.id, fd);
+        await awardService.update(editingAward.id, formData);
         toast("Award updated successfully", "success");
       } else {
-        await awardService.create(fd);
+        await awardService.create(formData);
         toast("Award created successfully", "success");
       }
 
       setModalOpen(false);
       fetchAwards();
-    } catch {
-      // Local optimistic update for seamless preview
-      if (editingAward) {
-        setAwards((prev) =>
-          prev.map((a) =>
-            a.id === editingAward.id
-              ? {
-                  ...a,
-                  title: form.title,
-                  short_description: form.short_description,
-                  description: form.description,
-                  is_active: form.is_active,
-                  thumbnail_image: thumbnailPreview || a.thumbnail_image,
-                }
-              : a
+    } catch (err: any) {
+      const serverErrors = err?.response?.data?.errors;
+      let detailedMsg = "";
+      if (Array.isArray(serverErrors)) {
+        detailedMsg = serverErrors
+          .map((item: any) =>
+            Array.isArray(item.messages)
+              ? item.messages.join(" ")
+              : item.message || JSON.stringify(item)
           )
-        );
-        toast("Award updated (local preview)", "success");
-      } else {
-        const newAward: Award = {
-          id: Date.now(),
-          award_type_id: Number(form.award_type_id) || 1,
-          title: form.title,
-          slug: form.title.toLowerCase().replace(/\s+/g, "-"),
-          short_description: form.short_description,
-          description: form.description,
-          verified: false,
-          is_active: form.is_active,
-          thumbnail_image:
-            thumbnailPreview ||
-            "https://readdy.ai/api/search-image?query=An%20award%20plaque%20on%20a%20clean%20background&width=800&height=600",
-          award_type: awardTypes.find((t) => String(t.id) === form.award_type_id) || {
-            id: 1,
-            name: "General",
-            slug: "general",
-            is_active: true,
-          },
-          galleries: galleryPreviews.map((src, i) => ({
-            id: Date.now() + i,
-            award_id: Date.now(),
-            image_path: src,
-            caption: `Moment ${i + 1} from the award stage`,
-          })),
-          created_at: new Date().toISOString(),
-        };
-        setAwards((prev) => [newAward, ...prev]);
-        toast("Award created (local preview)", "success");
+          .join(" | ");
+      } else if (serverErrors && typeof serverErrors === "object") {
+        detailedMsg = Object.values(serverErrors).flat().join(" | ");
       }
-      setModalOpen(false);
+
+      const serverMsg =
+        detailedMsg ||
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Failed to save award. Please verify your inputs.";
+      toast(serverMsg, "error");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteAward = async () => {
     if (!deleteTarget) return;
     try {
       setDeleting(true);
       await awardService.delete(deleteTarget.id);
       toast("Award deleted successfully", "success");
       setDeleteConfirmOpen(false);
+      setDeleteTarget(null);
       fetchAwards();
     } catch {
-      // Local optimistic delete
-      setAwards((prev) => prev.filter((a) => a.id !== deleteTarget.id));
-      toast("Award deleted (local preview)", "success");
-      setDeleteConfirmOpen(false);
+      toast("Failed to delete award", "error");
     } finally {
       setDeleting(false);
-      setDeleteTarget(null);
     }
   };
 
-  const activeGalleryPhotos: AwardGallery[] =
-    extendedAward?.galleries && extendedAward.galleries.length > 0
-      ? extendedAward.galleries
-      : [
-          {
-            id: 1,
-            award_id: extendedAward?.id || 1,
-            image_path:
-              extendedAward?.thumbnail_image ||
-              "https://readdy.ai/api/search-image?query=Award%20stage%20ceremony&width=1600&height=1000",
-            caption: "Ceremony stage moment for " + (extendedAward?.title || "Award"),
-          },
-        ];
+  // -------------------------------------------------------------
+  // CATEGORIES ACTIONS
+  // -------------------------------------------------------------
+  const handleToggleCategoryStatus = async (type: AwardType) => {
+    try {
+      await awardTypeService.toggleStatus(type.id);
+      toast("Category status updated", "success");
+      fetchCategories();
+      refreshCategoryOptions();
+    } catch {
+      toast("Failed to update category status", "error");
+    }
+  };
 
+  const openCreateCategoryModal = () => {
+    setEditingCategory(null);
+    setCategoryForm({
+      name: "",
+      slug: "",
+      description: "",
+      is_active: true,
+    });
+    setCategoryModalOpen(true);
+  };
+
+  const openEditCategoryModal = (type: AwardType) => {
+    setEditingCategory(type);
+    setCategoryForm({
+      name: type.name,
+      slug: type.slug,
+      description: type.description || "",
+      is_active: type.is_active,
+    });
+    setCategoryModalOpen(true);
+    setCategoryDropdownId(null);
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      toast("Category name is required", "warning");
+      return;
+    }
+    try {
+      setCategorySaving(true);
+      if (editingCategory) {
+        await awardTypeService.update(editingCategory.id, categoryForm);
+        toast("Award category updated", "success");
+      } else {
+        await awardTypeService.create(categoryForm);
+        toast("Award category created", "success");
+      }
+      setCategoryModalOpen(false);
+      fetchCategories();
+      refreshCategoryOptions();
+    } catch {
+      toast("Failed to save award category", "error");
+    } finally {
+      setCategorySaving(false);
+    }
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!categoryDeleteTarget) return;
+    try {
+      setCategoryDeleting(true);
+      await awardTypeService.delete(categoryDeleteTarget.id);
+      toast("Award category deleted", "success");
+      const deletedId = categoryDeleteTarget.id;
+      setCategoryDeleteConfirmOpen(false);
+      setCategoryDeleteTarget(null);
+      await fetchCategories();
+      await refreshCategoryOptions();
+      setForm((prev) => {
+        if (String(prev.award_type_id) === String(deletedId)) {
+          const remaining = awardTypes.filter((t) => t.id !== deletedId);
+          return {
+            ...prev,
+            award_type_id: remaining[0] ? String(remaining[0].id) : "1",
+          };
+        }
+        return prev;
+      });
+    } catch {
+      toast("Failed to delete category", "error");
+    } finally {
+      setCategoryDeleting(false);
+    }
+  };
+
+  // Quick Add Category from inside Award Form
+  const handleSaveQuickCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickAddForm.name.trim()) {
+      toast("Category name is required", "warning");
+      return;
+    }
+    try {
+      setQuickAddSaving(true);
+      const res = await awardTypeService.create({
+        name: quickAddForm.name.trim(),
+        description: quickAddForm.description.trim() || undefined,
+        is_active: true,
+      });
+
+      toast("Award category created and selected", "success");
+      setQuickAddCategoryOpen(false);
+      setQuickAddForm({ name: "", description: "" });
+
+      await refreshCategoryOptions();
+      if (activeTab === "categories") fetchCategories();
+
+      const newId = (res as any)?.data?.id || (res as any)?.id;
+      if (newId) {
+        setForm((prev) => ({ ...prev, award_type_id: String(newId) }));
+      }
+    } catch {
+      toast("Failed to create award category", "error");
+    } finally {
+      setQuickAddSaving(false);
+    }
+  };
+
+  // Extended View Active Photos
+  const activeGalleryPhotos = extendedAward?.galleries || [];
   const currentGalleryPhoto =
     activeGalleryPhotos[galleryIndex] || activeGalleryPhotos[0];
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Page Header matching standard admin modules (clean typography, no icons in H1) */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <Trophy className="h-7 w-7 text-primary" />
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary dark:text-white">
             Awards & Accreditations
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage company awards, ceremony stage photo galleries, and descriptions shown across the website.
+          <p className="mt-1 text-sm text-text-muted dark:text-gray-400">
+            Manage company awards, ceremony stage photo galleries, citations, and recognition categories.
           </p>
         </div>
 
+        {/* Tab-aware Primary Action matching other modules */}
         <div className="flex items-center gap-2">
-          {/* View mode toggle */}
-          <div className="flex items-center rounded-lg border bg-muted/30 p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("cards")}
-              aria-label="Cards view"
-              className={`p-1.5 rounded-md text-xs font-medium transition-colors ${
-                viewMode === "cards"
-                  ? "bg-background text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("table")}
-              aria-label="Table view"
-              className={`p-1.5 rounded-md text-xs font-medium transition-colors ${
-                viewMode === "table"
-                  ? "bg-background text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <TableIcon className="h-4 w-4" />
-            </button>
-          </div>
-
-          <PermissionGuard permission="Award Create">
-            <Button onClick={openCreateModal} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Award
-            </Button>
-          </PermissionGuard>
+          {activeTab === "awards" ? (
+            <PermissionGuard permission="Award Create">
+              <Button onClick={openCreateAwardModal} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" /> Add Award
+              </Button>
+            </PermissionGuard>
+          ) : (
+            <PermissionGuard permission="Award Type Create">
+              <Button onClick={openCreateCategoryModal} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" /> Add Category
+              </Button>
+            </PermissionGuard>
+          )}
         </div>
       </div>
 
-      {apiErrorNote && (
-        <div className="p-3.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2.5">
-          <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-          <span>{apiErrorNote}</span>
-        </div>
-      )}
+      {/* Tabs matching FAQs / standard admin nav bar */}
+      <div className="border-b border-border dark:border-gray-800">
+        <nav className="flex space-x-6" aria-label="Awards tabs">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "awards"}
+            onClick={() => {
+              setActiveTab("awards");
+              window.history.replaceState(null, "", "/awards?tab=awards");
+            }}
+            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+              activeTab === "awards"
+                ? "border-primary text-primary font-semibold"
+                : "border-transparent text-text-muted hover:text-text-primary hover:border-gray-300 dark:text-gray-400"
+            }`}
+          >
+            <Trophy className="h-4 w-4" />
+            Awards ({totalCount})
+          </button>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-        <div className="flex flex-1 items-center gap-3">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search awards by title or presenter..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-
-          {/* Category Filter Pills */}
-          <div className="hidden sm:flex items-center gap-1.5 overflow-x-auto pb-1 max-w-lg">
-            <button
-              type="button"
-              onClick={() => setSelectedCategory("All")}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors shrink-0 ${
-                selectedCategory === "All"
-                  ? "bg-primary text-primary-foreground border-primary font-semibold"
-                  : "bg-background text-muted-foreground border-border hover:border-primary/40"
-              }`}
-            >
-              All Categories
-            </button>
-            {awardTypes.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setSelectedCategory(t.name)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors shrink-0 ${
-                  selectedCategory.toLowerCase() === t.name.toLowerCase()
-                    ? "bg-primary text-primary-foreground border-primary font-semibold"
-                    : "bg-background text-muted-foreground border-border hover:border-primary/40"
-                }`}
-              >
-                {t.name}
-              </button>
-            ))}
-          </div>
-        </div>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "categories"}
+            onClick={() => {
+              setActiveTab("categories");
+              window.history.replaceState(null, "", "/awards?tab=categories");
+            }}
+            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+              activeTab === "categories"
+                ? "border-primary text-primary font-semibold"
+                : "border-transparent text-text-muted hover:text-text-primary hover:border-gray-300 dark:text-gray-400"
+            }`}
+          >
+            <AwardIcon className="h-4 w-4" />
+            Categories ({categoryTotalCount})
+          </button>
+        </nav>
       </div>
 
-      {/* Main Content Area */}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        </div>
-      ) : awards.length === 0 ? (
-        <div className="text-center py-16 border rounded-xl bg-card">
-          <Trophy className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-          <h3 className="text-lg font-semibold text-foreground">No awards found</h3>
-          <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-            {search
-              ? "No awards matching your search term. Try resetting your query."
-              : "Get started by adding your first plantation company award."}
-          </p>
-          <PermissionGuard permission="Award Create">
-            <Button onClick={openCreateModal} className="mt-4 gap-2">
-              <Plus className="h-4 w-4" /> Add Award
-            </Button>
-          </PermissionGuard>
-        </div>
-      ) : viewMode === "cards" ? (
-        /* ================= CARDS VIEW (Matches Website Design) ================= */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {awards.map((a) => (
-            <div
-              key={a.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => setExtendedAward(a)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setExtendedAward(a);
-                }
-              }}
-              className="group relative flex flex-col rounded-xl border bg-card text-card-foreground overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:border-primary/40 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {/* Card Image without circular icon */}
-              <div className="relative h-44 overflow-hidden bg-muted">
-                {a.thumbnail_image ? (
-                  <img
-                    src={a.thumbnail_image}
-                    alt={a.title}
-                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    <ImageIcon className="h-10 w-10 opacity-30" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/95 dark:bg-black/90 text-[10px] font-semibold uppercase tracking-wider text-primary">
-                  {a.award_type?.name || "Recognition"}
-                </span>
+      {/* ----------------------------------------------------------- */}
+      {/* TAB 1: AWARDS & ACCREDITATIONS                              */}
+      {/* ----------------------------------------------------------- */}
+      {activeTab === "awards" && (
+        <div className="space-y-4">
+          {apiErrorNote && (
+            <div className="p-3.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2.5">
+              <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>{apiErrorNote}</span>
+            </div>
+          )}
 
-                {/* Status Toggle on card */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleStatus(a);
+          {/* Filter Bar enclosed in standard card container matching FAQs/Branches/Blogs */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white dark:bg-gray-800 p-4 rounded-xl border border-border dark:border-gray-700 shadow-xs">
+            <div className="flex flex-1 flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted dark:text-gray-400 pointer-events-none" />
+                <Input
+                  placeholder="Search awards by title or presenter..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
                   }}
-                  title={a.is_active ? "Active on website" : "Hidden from website"}
-                  className="absolute top-3 right-3 p-1.5 rounded-md bg-black/60 text-white backdrop-blur-xs hover:bg-black/80 transition-colors"
-                >
-                  {a.is_active ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  ) : (
-                    <XCircle className="h-3.5 w-3.5 text-rose-400" />
-                  )}
-                </button>
+                  className="pl-9"
+                />
               </div>
 
-              {/* Card Body - No Verified tag */}
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-semibold text-base text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                  {a.title}
-                </h3>
-
-                <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5 line-clamp-1">
-                  <Building className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-                  <span>Presented by <strong className="text-foreground">{a.short_description || "CDP"}</strong></span>
-                </p>
-
-                {/* Footer with Date & Moments count */}
-                <div className="mt-auto pt-4 flex items-center justify-between border-t text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1 font-medium text-foreground">
-                    <Calendar className="h-3.5 w-3.5 text-primary" />
-                    {a.created_at ? new Date(a.created_at).getFullYear() : "2024"}
-                  </span>
-
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-primary">
-                    <Camera className="h-3 w-3" />
-                    {a.galleries?.length || 0} stage moments
-                  </span>
-                </div>
-
-                {/* Visual View Details & Gallery cue */}
-                <div className="mt-2.5 pt-1 flex items-center justify-between text-xs font-medium text-primary group-hover:text-primary/90">
-                  <span>View details & gallery</span>
-                  <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-                </div>
-
-                {/* Interactive Action Bar */}
-                <div
-                  className="mt-3 pt-3 border-t flex items-center justify-between gap-2"
-                  onClick={(e) => e.stopPropagation()}
+              <div className="min-w-[200px] flex-1 sm:flex-initial">
+                <Select
+                  value={selectedCategory}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  aria-label="Filter by category"
+                  className="w-full text-xs"
                 >
+                  <option value="All">All Categories</option>
+                  {awardTypes.map((t) => (
+                    <option key={t.id} value={t.name}>
+                      {t.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center rounded-lg border border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-1 shrink-0 self-end sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                aria-label="Table view"
+                className={`p-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  viewMode === "table"
+                    ? "bg-white dark:bg-gray-800 text-text-primary dark:text-white shadow-xs"
+                    : "text-text-muted hover:text-text-primary dark:text-gray-400"
+                }`}
+              >
+                <TableIcon className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                aria-label="Cards view"
+                className={`p-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                  viewMode === "cards"
+                    ? "bg-white dark:bg-gray-800 text-text-primary dark:text-white shadow-xs"
+                    : "text-text-muted hover:text-text-primary dark:text-gray-400"
+                }`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Awards Content */}
+          {loading ? (
+            <div className="rounded-xl border border-border dark:border-gray-700 bg-white dark:bg-gray-800 p-16 text-center shadow-xs">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+              <p className="text-xs text-text-muted dark:text-gray-400">Loading awards & stage galleries...</p>
+            </div>
+          ) : awards.length === 0 ? (
+            <div className="rounded-xl border border-border dark:border-gray-700 bg-white dark:bg-gray-800 p-16 text-center flex flex-col items-center justify-center shadow-xs">
+              <Trophy className="h-12 w-12 text-text-muted/40 dark:text-gray-600 mb-3" />
+              <h3 className="text-base font-semibold text-text-primary dark:text-white">No awards found</h3>
+              <p className="text-xs text-text-muted dark:text-gray-400 max-w-sm mt-1 mb-4">
+                {search || selectedCategory !== "All"
+                  ? "No awards matched your search or category filter. Try clearing filters."
+                  : "Get started by adding your first plantation company award."}
+              </p>
+              <PermissionGuard permission="Award Create">
+                <Button onClick={openCreateAwardModal} className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" /> Add Award
+                </Button>
+              </PermissionGuard>
+            </div>
+          ) : viewMode === "table" ? (
+            /* Table View (Default across admin modules) */
+            <div className="rounded-xl border border-border dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden shadow-xs">
+              <div className="w-full overflow-x-auto touch-scroll">
+                <table className="w-full text-left text-sm min-w-[750px]">
+                  <thead className="bg-gray-50/75 dark:bg-gray-900/50 border-b border-border dark:border-gray-700 text-xs uppercase text-text-muted dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="px-6 py-3.5 font-semibold">Award</th>
+                      <th scope="col" className="px-6 py-3.5 font-semibold">Category</th>
+                      <th scope="col" className="px-6 py-3.5 font-semibold">Presented By</th>
+                      <th scope="col" className="px-6 py-3.5 font-semibold text-center">Stage Photos</th>
+                      <th scope="col" className="px-6 py-3.5 font-semibold">Status</th>
+                      <th scope="col" className="px-6 py-3.5 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border dark:divide-gray-700">
+                    {awards.map((award) => {
+                      const count = award.galleries?.length || 0;
+                      return (
+                        <tr
+                          key={award.id}
+                          className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="relative h-11 w-11 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0 border border-border dark:border-gray-600">
+                                {award.thumbnail_image ? (
+                                  <img
+                                    src={resolveImageUrl(award.thumbnail_image)}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <ImageIcon className="h-5 w-5 text-text-muted dark:text-gray-400 m-auto mt-3" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-text-primary dark:text-white text-sm truncate max-w-xs">
+                                  {award.title}
+                                </p>
+                                <p className="text-xs text-text-muted dark:text-gray-400 truncate max-w-xs">
+                                  {award.slug}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-xs">
+                            <span className="px-2.5 py-1 rounded-md bg-gray-100 text-text-primary dark:bg-gray-700 dark:text-gray-200 font-medium">
+                              {award.award_type?.name || "General"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-xs text-text-muted dark:text-gray-400 max-w-xs truncate">
+                            {award.short_description || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-center whitespace-nowrap text-xs">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 font-medium text-[11px]">
+                              <Camera className="h-3 w-3" />
+                              {count} {count === 1 ? "Photo" : "Photos"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleAwardStatus(award)}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                                award.is_active
+                                  ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                  : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                              }`}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  award.is_active ? "bg-emerald-500" : "bg-gray-400"
+                                }`}
+                              />
+                              {award.is_active ? "Active" : "Inactive"}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <div className="relative inline-block text-left">
+                              <button
+                                type="button"
+                                aria-label="Open award actions"
+                                onClick={() =>
+                                  setOpenDropdownId(openDropdownId === award.id ? null : award.id)
+                                }
+                                className="p-1.5 rounded-lg text-text-muted hover:text-text-primary dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
+                              {openDropdownId === award.id && (
+                                <div className="absolute right-0 mt-2 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-border dark:border-gray-700 py-1 z-10 text-xs">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setExtendedAward(award);
+                                      setOpenDropdownId(null);
+                                    }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                                  >
+                                    <Eye className="h-3.5 w-3.5" /> View Details
+                                  </button>
+                                  <PermissionGuard permission="Award Update">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        openEditAwardModal(award);
+                                        setOpenDropdownId(null);
+                                      }}
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    >
+                                      <Edit2 className="h-3.5 w-3.5" /> Edit
+                                    </button>
+                                  </PermissionGuard>
+                                  <PermissionGuard permission="Award Delete">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setDeleteTarget(award);
+                                        setDeleteConfirmOpen(true);
+                                        setOpenDropdownId(null);
+                                      }}
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                                    </button>
+                                  </PermissionGuard>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Standard Pagination matching other modules */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border dark:border-gray-700 text-xs text-text-muted dark:text-gray-400">
+                <div className="flex items-center gap-2">
+                  <label htmlFor={perPageSelectId}>Rows per page:</label>
+                  <select
+                    id={perPageSelectId}
+                    value={perPage}
+                    onChange={(e) => {
+                      setPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="px-2 py-1 border border-border dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-text-primary dark:text-white"
+                  >
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span>Showing {awards.length} of {totalCount} awards</span>
+                </div>
+
+                <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExtendedAward(a);
-                    }}
-                    className="flex-1 text-xs gap-1.5 h-8"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="h-8 w-8 p-0"
                   >
-                    <Eye className="h-3.5 w-3.5" />
-                    View Details
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
-
-                  <PermissionGuard permission="Award Update">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openEditModal(a);
-                      }}
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    >
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </PermissionGuard>
-
-                  <PermissionGuard permission="Award Delete">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTarget(a);
-                        setDeleteConfirmOpen(true);
-                      }}
-                      className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </PermissionGuard>
+                  <span className="px-3">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        /* ================= TABLE VIEW ================= */
-        <div className="border rounded-xl bg-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-muted/50 text-muted-foreground uppercase text-xs font-semibold">
-                <tr>
-                  <th className="px-6 py-4">Award Title</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Presented By</th>
-                  <th className="px-6 py-4">Stage Gallery</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {awards.map((a) => (
-                  <tr key={a.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-6 py-4 font-medium text-foreground">
-                      <div className="flex items-center gap-3">
-                        {a.thumbnail_image && (
-                          <img
-                            src={a.thumbnail_image}
-                            alt=""
-                            className="w-10 h-10 rounded-md object-cover"
-                          />
+          ) : (
+            /* Cards View (Optional Grid) */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {awards.map((award) => {
+                const photosCount = award.galleries?.length || 0;
+                return (
+                  <div
+                    key={award.id}
+                    onClick={() => setExtendedAward(award)}
+                    className="group border border-border dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-xs hover:shadow-md transition-all flex flex-col cursor-pointer"
+                  >
+                    <div className="relative h-44 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                      {award.thumbnail_image ? (
+                        <img
+                          src={resolveImageUrl(award.thumbnail_image)}
+                          alt={award.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-text-muted dark:text-gray-400">
+                          <ImageIcon className="h-10 w-10 mb-1 opacity-40" />
+                          <span className="text-[11px]">No Thumbnail</span>
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+
+                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-white/95 text-black text-[10px] font-semibold tracking-wider uppercase shadow-xs">
+                        {award.award_type?.name || "General"}
+                      </span>
+
+                      {photosCount > 0 ? (
+                        <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-primary text-white text-[10px] font-semibold flex items-center gap-1 shadow-xs">
+                          <Camera className="h-3 w-3" />
+                          {photosCount} {photosCount === 1 ? "Photo" : "Photos"}
+                        </span>
+                      ) : (
+                        <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/60 text-white/80 text-[10px] font-medium flex items-center gap-1">
+                          <Camera className="h-3 w-3" /> 0 Photos
+                        </span>
+                      )}
+
+                      {award.short_description && (
+                        <p className="absolute bottom-2.5 left-3 right-3 text-xs text-white/90 font-medium line-clamp-1 flex items-center gap-1.5">
+                          <Building className="h-3.5 w-3.5 shrink-0 text-amber-300" />
+                          <span>{award.short_description}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="p-4 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-semibold text-sm text-text-primary dark:text-white line-clamp-2 group-hover:text-primary transition-colors">
+                          {award.title}
+                        </h4>
+                        {award.description && (
+                          <p className="text-xs text-text-muted dark:text-gray-400 mt-2 line-clamp-2">
+                            {award.description}
+                          </p>
                         )}
-                        <span className="line-clamp-1">{a.title}</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                        {a.award_type?.name || "General"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground">
-                      {a.short_description || "—"}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Camera className="h-3.5 w-3.5 text-primary" />
-                        {a.galleries?.length || 0} photos
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStatus(a)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                          a.is_active
-                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                            : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                        }`}
-                      >
-                        {a.is_active ? "Active" : "Inactive"}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setExtendedAward(a)}
-                          className="h-8 w-8"
-                          title="View Extended Details"
+
+                      <div className="pt-3 mt-3 border-t border-border dark:border-gray-700 flex items-center justify-between text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleAwardStatus(award);
+                          }}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            award.is_active
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                              : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                          }`}
                         >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <PermissionGuard permission="Award Update">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openEditModal(a)}
-                            className="h-8 w-8"
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              award.is_active ? "bg-emerald-500" : "bg-gray-400"
+                            }`}
+                          />
+                          {award.is_active ? "Active" : "Inactive"}
+                        </button>
+
+                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            aria-label={`View details for ${award.title}`}
+                            onClick={() => setExtendedAward(award)}
+                            className="p-1.5 text-text-muted hover:text-text-primary dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                           >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                        </PermissionGuard>
-                        <PermissionGuard permission="Award Delete">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setDeleteTarget(a);
-                              setDeleteConfirmOpen(true);
-                            }}
-                            className="h-8 w-8 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </PermissionGuard>
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <PermissionGuard permission="Award Update">
+                            <button
+                              type="button"
+                              aria-label={`Edit ${award.title}`}
+                              onClick={() => openEditAwardModal(award)}
+                              className="p-1.5 text-text-muted hover:text-primary dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                          </PermissionGuard>
+                          <PermissionGuard permission="Award Delete">
+                            <button
+                              type="button"
+                              aria-label={`Delete ${award.title}`}
+                              onClick={() => {
+                                setDeleteTarget(award);
+                                setDeleteConfirmOpen(true);
+                              }}
+                              className="p-1.5 text-text-muted hover:text-red-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </PermissionGuard>
+                        </div>
                       </div>
-                    </td>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------- */}
+      {/* TAB 2: AWARD CATEGORIES (TYPES)                             */}
+      {/* ----------------------------------------------------------- */}
+      {activeTab === "categories" && (
+        <div className="space-y-4">
+          {/* Categories Search Bar */}
+          <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl border border-border dark:border-gray-700 shadow-xs">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted dark:text-gray-400 pointer-events-none" />
+              <Input
+                placeholder="Search award categories..."
+                value={categorySearch}
+                onChange={(e) => {
+                  setCategorySearch(e.target.value);
+                  setCategoryCurrentPage(1);
+                }}
+                className="pl-9"
+              />
+            </div>
+          </div>
+
+          {/* Categories Table */}
+          <div className="rounded-xl border border-border dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden shadow-xs">
+            <div className="w-full overflow-x-auto touch-scroll">
+              <table className="w-full text-left text-sm min-w-[700px]">
+                <thead className="bg-gray-50/75 dark:bg-gray-900/50 border-b border-border dark:border-gray-700 text-xs uppercase text-text-muted dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3.5 font-semibold">Category Name</th>
+                    <th scope="col" className="px-6 py-3.5 font-semibold">Slug</th>
+                    <th scope="col" className="px-6 py-3.5 font-semibold">Description</th>
+                    <th scope="col" className="px-6 py-3.5 font-semibold">Status</th>
+                    <th scope="col" className="px-6 py-3.5 font-semibold text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border dark:divide-gray-700">
+                  {categoryLoading ? (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center text-text-muted dark:text-gray-400">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2" />
+                        Loading award categories...
+                      </td>
+                    </tr>
+                  ) : categoryList.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center text-text-muted dark:text-gray-400">
+                        No award categories found. Create one with the Add Category button above.
+                      </td>
+                    </tr>
+                  ) : (
+                    categoryList.map((type) => (
+                      <tr key={type.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-text-primary dark:text-white flex items-center gap-2">
+                          <AwardIcon className="h-4 w-4 text-amber-500 shrink-0" />
+                          <span>{type.name}</span>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-xs text-text-muted dark:text-gray-400">
+                          {type.slug}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-text-muted dark:text-gray-400 max-w-xs truncate">
+                          {type.description || "—"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleCategoryStatus(type)}
+                            aria-label={`Toggle status for ${type.name}`}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                              type.is_active
+                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                            }`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${type.is_active ? "bg-emerald-500" : "bg-gray-400"}`} />
+                            {type.is_active ? "Active" : "Inactive"}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
+                          <div className="flex items-center justify-end gap-2">
+                            <PermissionGuard permission="Award Type Update">
+                              <button
+                                type="button"
+                                onClick={() => openEditCategoryModal(type)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-text-primary dark:text-white font-medium transition-colors cursor-pointer"
+                                title={`Edit category ${type.name}`}
+                              >
+                                <Edit2 className="h-3.5 w-3.5 text-primary" />
+                                <span>Edit</span>
+                              </button>
+                            </PermissionGuard>
+                            <PermissionGuard permission="Award Type Delete">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCategoryDeleteTarget(type);
+                                  setCategoryDeleteConfirmOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 font-medium transition-colors cursor-pointer"
+                                title={`Delete category ${type.name}`}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>Delete</span>
+                              </button>
+                            </PermissionGuard>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Category Pagination */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border dark:border-gray-700 text-xs text-text-muted dark:text-gray-400">
+              <div className="flex items-center gap-2">
+                <label htmlFor={categoryPerPageSelectId}>Rows per page:</label>
+                <select
+                  id={categoryPerPageSelectId}
+                  value={categoryPerPage}
+                  onChange={(e) => {
+                    setCategoryPerPage(Number(e.target.value));
+                    setCategoryCurrentPage(1);
+                  }}
+                  className="px-2 py-1 border border-border dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-text-primary dark:text-white"
+                >
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>Showing {categoryList.length} of {categoryTotalCount} categories</span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={categoryCurrentPage <= 1}
+                  onClick={() => setCategoryCurrentPage((p) => Math.max(1, p - 1))}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="px-3">
+                  Page {categoryCurrentPage} of {categoryTotalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={categoryCurrentPage >= categoryTotalPages}
+                  onClick={() => setCategoryCurrentPage((p) => Math.min(categoryTotalPages, p + 1))}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ================= EXTENDED AWARD VIEW MODAL ================= */}
+      {/* ================= EXTENDED AWARD DETAIL & GALLERY MODAL ================= */}
       {extendedAward && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/75 backdrop-blur-sm overflow-y-auto"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setExtendedAward(null);
-          }}
           role="dialog"
           aria-modal="true"
+          aria-labelledby="modal-award-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setExtendedAward(null)}
         >
-          <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-2xl bg-card border shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
-            {/* Close button positioned at top right without divider line */}
-            <button
-              type="button"
-              onClick={() => setExtendedAward(null)}
-              aria-label="Close"
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30 w-9 h-9 flex items-center justify-center rounded-full bg-muted/80 hover:bg-muted text-foreground transition-colors focus:outline-none shadow-xs backdrop-blur-xs"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Modal Body */}
-            <div className="overflow-y-auto p-6 sm:p-8 md:p-10 space-y-8 flex-1">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight pr-12">
-                  {extendedAward.title}
-                </h2>
-
-                <div className="mt-4 flex flex-wrap items-center gap-y-2.5 gap-x-6 text-sm text-muted-foreground">
-                  <span className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
-                    {extendedAward.award_type?.name || "Award"}
-                  </span>
-                  <div className="inline-flex items-center gap-2">
-                    <Building className="h-4 w-4 text-primary" />
-                    <span>Presented By: <strong className="text-foreground">{extendedAward.short_description || "CDP"}</strong></span>
-                  </div>
-                  <div className="inline-flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    <span>Date: <strong className="text-foreground">
-                      {extendedAward.created_at
-                        ? new Date(extendedAward.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-                        : "2024"}
-                    </strong></span>
-                  </div>
-                </div>
-
-                {/* Citation */}
-                <div className="mt-5 p-5 rounded-xl bg-muted/50 border">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Award Citation & Details
-                  </h4>
-                  <p className="text-sm md:text-base text-foreground/90 leading-relaxed">
-                    {extendedAward.description || "Conferred in recognition of outstanding operational standards."}
-                  </p>
-                </div>
+          <div
+            className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-gray-800 border border-border dark:border-gray-700 shadow-2xl text-text-primary dark:text-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border dark:border-gray-700 px-6 py-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold text-xs uppercase tracking-wider">
+                  {extendedAward.award_type?.name || "Recognition"}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    extendedAward.is_active
+                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      extendedAward.is_active ? "bg-emerald-500" : "bg-gray-400"
+                    }`}
+                  />
+                  {extendedAward.is_active ? "Active" : "Inactive"}
+                </span>
               </div>
 
-              {/* Gallery – Moments from the Award Stage */}
-              <div className="pt-2 border-t">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <span className="text-xs font-semibold text-primary uppercase tracking-wider">
-                      Ceremony Highlights
-                    </span>
-                    <h3 className="text-xl font-bold text-foreground">
-                      Gallery – Moments from the Award Stage
-                    </h3>
+              <div className="flex items-center gap-2">
+                <PermissionGuard permission="Award Update">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const award = extendedAward;
+                      setExtendedAward(null);
+                      openEditAwardModal(award);
+                    }}
+                    className="gap-1.5 h-8 text-xs"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" /> Edit
+                  </Button>
+                </PermissionGuard>
+                <button
+                  type="button"
+                  aria-label="Close award modal"
+                  onClick={() => setExtendedAward(null)}
+                  className="rounded-full p-1.5 text-text-muted hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-primary transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-6">
+              <div>
+                <h2 id="modal-award-title" className="text-xl sm:text-2xl font-bold text-text-primary dark:text-white">
+                  {extendedAward.title}
+                </h2>
+                {extendedAward.short_description && (
+                  <p className="mt-1 text-sm font-medium text-primary flex items-center gap-1.5">
+                    <Building className="h-4 w-4 shrink-0 text-primary" />
+                    <span>Presented by: {extendedAward.short_description}</span>
+                  </p>
+                )}
+              </div>
+
+              {extendedAward.description && (
+                <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-border dark:border-gray-700">
+                  <h3 className="text-xs font-semibold text-text-muted dark:text-gray-400 uppercase tracking-wider mb-1">
+                    Recognition Citation
+                  </h3>
+                  <p className="text-sm text-text-primary dark:text-gray-200 leading-relaxed whitespace-pre-line">
+                    {extendedAward.description}
+                  </p>
+                </div>
+              )}
+
+              {extendedAward.thumbnail_image && (
+                <div>
+                  <h3 className="text-xs font-semibold text-text-muted dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Trophy className="h-3.5 w-3.5 text-amber-500" />
+                    Official Award Plaque / Certificate
+                  </h3>
+                  <div className="relative h-64 sm:h-80 rounded-xl overflow-hidden border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                    <img
+                      src={resolveImageUrl(extendedAward.thumbnail_image)}
+                      alt={extendedAward.title}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {activeGalleryPhotos.length} ceremony photographs
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-semibold text-text-muted dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Camera className="h-3.5 w-3.5 text-primary" />
+                    Moments from the Award Stage ({activeGalleryPhotos.length})
+                  </h3>
+                  <span className="text-[11px] text-text-muted dark:text-gray-400">
+                    Captured during official conferral
                   </span>
                 </div>
 
-                {/* Stage Moments Viewer */}
-                <div className="relative rounded-xl overflow-hidden border bg-black shadow-inner">
-                  <div className="relative aspect-[16/10] sm:aspect-[16/9] max-h-[380px] w-full flex items-center justify-center overflow-hidden">
-                    {activeGalleryPhotos.map((photo, i) => (
-                      <img
-                        key={photo.id || i}
-                        src={photo.image_path}
-                        alt={photo.caption || "Ceremony moment"}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                          i === galleryIndex ? "opacity-100" : "opacity-0 pointer-events-none"
-                        }`}
-                      />
-                    ))}
+                {activeGalleryPhotos.length > 0 ? (
+                  <div className="rounded-xl overflow-hidden border border-gray-800 bg-black/95">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden flex items-center justify-center">
+                      {activeGalleryPhotos.map((photo: AwardGallery, i: number) => (
+                        <img
+                          key={photo.id || i}
+                          src={resolveImageUrl(photo.image_path)}
+                          alt={photo.caption || extendedAward.title}
+                          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                            i === galleryIndex ? "opacity-100" : "opacity-0 pointer-events-none"
+                          }`}
+                        />
+                      ))}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 
-                    <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/90 text-black text-[10px] font-semibold uppercase tracking-wider mb-2">
-                        <Camera className="h-3 w-3" />
-                        {String(galleryIndex + 1).padStart(2, "0")} / {String(activeGalleryPhotos.length).padStart(2, "0")}
-                      </span>
-                      <p className="text-sm text-white font-medium line-clamp-2">
-                        {currentGalleryPhoto?.caption || "Moments from the award stage."}
-                      </p>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/90 text-black text-[10px] font-semibold uppercase tracking-wider mb-2">
+                          <Camera className="h-3 w-3" />
+                          {String(galleryIndex + 1).padStart(2, "0")} / {String(activeGalleryPhotos.length).padStart(2, "0")}
+                        </span>
+                        <p className="text-sm text-white font-medium line-clamp-2">
+                          {currentGalleryPhoto?.caption || `Moments from the stage: ${extendedAward.title}`}
+                        </p>
+                      </div>
+
+                      {activeGalleryPhotos.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Previous photo"
+                            onClick={() => setGalleryIndex((i) => (i - 1 + activeGalleryPhotos.length) % activeGalleryPhotos.length)}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 transition-all cursor-pointer"
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Next photo"
+                            onClick={() => setGalleryIndex((i) => (i + 1) % activeGalleryPhotos.length)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 transition-all cursor-pointer"
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
+                        </>
+                      )}
                     </div>
 
                     {activeGalleryPhotos.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          aria-label="Previous photo"
-                          onClick={() => setGalleryIndex((i) => (i - 1 + activeGalleryPhotos.length) % activeGalleryPhotos.length)}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 transition-all"
-                        >
-                          <ChevronLeft className="h-5 w-5" />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label="Next photo"
-                          onClick={() => setGalleryIndex((i) => (i + 1) % activeGalleryPhotos.length)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 transition-all"
-                        >
-                          <ChevronRight className="h-5 w-5" />
-                        </button>
-                      </>
+                      <div className="flex gap-2 p-3 overflow-x-auto bg-gray-900 border-t border-gray-800">
+                        {activeGalleryPhotos.map((photo: AwardGallery, i: number) => (
+                          <button
+                            key={photo.id || i}
+                            type="button"
+                            onClick={() => setGalleryIndex(i)}
+                            className={`relative shrink-0 w-20 aspect-[16/10] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
+                              i === galleryIndex ? "border-primary scale-105 opacity-100" : "border-transparent opacity-60 hover:opacity-100"
+                            }`}
+                          >
+                            <img src={resolveImageUrl(photo.image_path)} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  {activeGalleryPhotos.length > 1 && (
-                    <div className="flex gap-2 p-3 overflow-x-auto bg-muted/80 border-t">
-                      {activeGalleryPhotos.map((photo, i) => (
-                        <button
-                          key={photo.id || i}
-                          type="button"
-                          onClick={() => setGalleryIndex(i)}
-                          className={`relative shrink-0 w-20 aspect-[16/10] rounded-md overflow-hidden border-2 transition-all ${
-                            i === galleryIndex ? "border-primary scale-105 opacity-100" : "border-transparent opacity-60 hover:opacity-100"
-                          }`}
-                        >
-                          <img src={photo.image_path} alt="" className="w-full h-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <div className="p-8 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-border dark:border-gray-700 text-center">
+                    <Camera className="h-10 w-10 mx-auto text-text-muted/40 dark:text-gray-600 mb-2" />
+                    <p className="text-sm font-medium text-text-primary dark:text-white">No ceremony photographs uploaded yet</p>
+                    <p className="text-xs text-text-muted dark:text-gray-400 mt-1">
+                      Edit this award to attach photos from the stage conferral ceremony.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1045,9 +1424,9 @@ export default function AwardsPage() {
         onClose={() => setModalOpen(false)}
         title={editingAward ? "Edit Award" : "Add New Award"}
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmitAward} className="space-y-4">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
               Award Title <span className="text-destructive">*</span>
             </label>
             <Input
@@ -1060,12 +1439,33 @@ export default function AwardsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="min-w-0">
+              {(() => {
+                const selectedCat = awardTypes.find(
+                  (t) => String(t.id) === String(form.award_type_id)
+                );
+                return (
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-medium text-text-primary dark:text-white">
+                      Award Category <span className="text-destructive">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuickAddForm({ name: "", description: "" });
+                        setQuickAddCategoryOpen(true);
+                      }}
+                      className="text-[11px] font-medium text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="h-3 w-3" /> Quick Add
+                    </button>
+                  </div>
+                );
+              })()}
               <Select
-                label="Award Category"
                 required
                 value={form.award_type_id}
                 onChange={(e) => setForm({ ...form, award_type_id: e.target.value })}
-                className="w-full min-w-0"
+                className="w-full min-w-0 text-xs"
               >
                 {awardTypes.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -1076,7 +1476,7 @@ export default function AwardsPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-foreground block mb-1">
+              <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
                 Presented By / Organization
               </label>
               <Input
@@ -1088,21 +1488,21 @@ export default function AwardsPage() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
               Award Citation / Description
             </label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              className="w-full px-3 py-2 text-sm border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 text-sm border border-border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Detailed recognition citation..."
             />
           </div>
 
           {/* Thumbnail Image Upload */}
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
               Award Trophy / Plaque Thumbnail Image
             </label>
             <input
@@ -1114,7 +1514,7 @@ export default function AwardsPage() {
             />
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2"
+              className="border-2 border-dashed border-border dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2"
             >
               {thumbnailPreview ? (
                 <div className="relative w-32 h-20 rounded-md overflow-hidden">
@@ -1125,8 +1525,8 @@ export default function AwardsPage() {
                 </div>
               ) : (
                 <>
-                  <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">Click to upload thumbnail image</p>
+                  <UploadCloud className="h-8 w-8 text-text-muted dark:text-gray-400" />
+                  <p className="text-xs text-text-muted dark:text-gray-400">Click to upload thumbnail image</p>
                 </>
               )}
             </div>
@@ -1135,11 +1535,11 @@ export default function AwardsPage() {
           {/* Multiple Award Stage Gallery Images */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-foreground">
+              <label className="text-xs font-medium text-text-primary dark:text-white">
                 Gallery – Moments from the Award Stage
               </label>
-              <span className="text-[11px] text-muted-foreground">
-                {galleryPreviews.length} photos selected
+              <span className="text-[11px] text-text-muted dark:text-gray-400">
+                {existingGalleries.length + newGalleryPreviews.length} photos selected
               </span>
             </div>
             <input
@@ -1154,26 +1554,47 @@ export default function AwardsPage() {
             <div className="space-y-3">
               <div
                 onClick={() => galleryInputRef.current?.click()}
-                className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2"
+                className="border-2 border-dashed border-border dark:border-gray-700 rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2"
               >
-                <Camera className="h-6 w-6 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">
+                <Camera className="h-6 w-6 text-text-muted dark:text-gray-400" />
+                <p className="text-xs text-text-muted dark:text-gray-400">
                   Click to add photos from the award conferral stage
                 </p>
               </div>
 
-              {galleryPreviews.length > 0 && (
+              {(existingGalleries.length > 0 || newGalleryPreviews.length > 0) && (
                 <div className="flex gap-2.5 overflow-x-auto pb-2">
-                  {galleryPreviews.map((src, i) => (
-                    <div key={i} className="relative shrink-0 w-20 h-16 rounded-md overflow-hidden border">
-                      <img src={src} alt="" className="w-full h-full object-cover" />
+                  {existingGalleries.map((g) => (
+                    <div key={`existing-${g.id}`} className="relative shrink-0 w-20 h-16 rounded-md overflow-hidden border border-border dark:border-gray-700 group">
+                      <img src={resolveImageUrl(g.image_path)} alt="" className="w-full h-full object-cover" />
                       <button
                         type="button"
+                        title="Remove photo"
                         onClick={(e) => {
                           e.stopPropagation();
-                          removeGalleryPreview(i);
+                          removeExistingGallery(g.id);
                         }}
-                        className="absolute top-1 right-1 p-0.5 bg-black/70 hover:bg-black text-white rounded-full"
+                        className="absolute top-1 right-1 p-0.5 bg-black/70 hover:bg-destructive text-white rounded-full transition-colors cursor-pointer"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {newGalleryPreviews.map((src, i) => (
+                    <div key={`new-${i}`} className="relative shrink-0 w-20 h-16 rounded-md overflow-hidden border border-primary/50 group ring-1 ring-primary/40">
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <span className="absolute bottom-0.5 left-0.5 px-1 rounded bg-primary text-[9px] font-semibold text-white">
+                        New
+                      </span>
+                      <button
+                        type="button"
+                        title="Remove photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeNewGalleryPreview(i);
+                        }}
+                        className="absolute top-1 right-1 p-0.5 bg-black/70 hover:bg-destructive text-white rounded-full transition-colors cursor-pointer"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -1192,12 +1613,12 @@ export default function AwardsPage() {
               onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
               className="rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <label htmlFor="is_active_checkbox" className="text-xs font-medium text-foreground">
+            <label htmlFor="is_active_checkbox" className="text-xs font-medium text-text-primary dark:text-white cursor-pointer">
               Active (Visible on public website)
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-4 border-t border-border dark:border-gray-700">
             <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
@@ -1208,15 +1629,146 @@ export default function AwardsPage() {
         </form>
       </Dialog>
 
-      {/* Delete Confirmation */}
+      {/* ================= FULL CREATE / EDIT CATEGORY MODAL ================= */}
+      <Dialog
+        open={categoryModalOpen}
+        onClose={() => setCategoryModalOpen(false)}
+        title={editingCategory ? "Edit Award Category" : "Add Award Category"}
+      >
+        <form onSubmit={handleSaveCategory} className="space-y-4">
+          <div>
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
+              Category Name <span className="text-destructive">*</span>
+            </label>
+            <Input
+              value={categoryForm.name}
+              onChange={(e) =>
+                setCategoryForm({
+                  ...categoryForm,
+                  name: e.target.value,
+                  slug: editingCategory
+                    ? categoryForm.slug
+                    : e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                })
+              }
+              placeholder="e.g. Sustainable Agronomy"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
+              Slug
+            </label>
+            <Input
+              value={categoryForm.slug}
+              onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+              placeholder="e.g. sustainable-agronomy"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
+              Description
+            </label>
+            <textarea
+              value={categoryForm.description}
+              onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+              rows={3}
+              className="w-full px-3 py-2 text-sm border border-border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Brief summary of what this recognition category represents..."
+            />
+          </div>
+
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="cat_is_active"
+              checked={categoryForm.is_active}
+              onChange={(e) => setCategoryForm({ ...categoryForm, is_active: e.target.checked })}
+              className="rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label htmlFor="cat_is_active" className="text-xs font-medium text-text-primary dark:text-white cursor-pointer">
+              Active Category
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-border dark:border-gray-700">
+            <Button type="button" variant="outline" onClick={() => setCategoryModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={categorySaving}>
+              {categorySaving ? "Saving..." : editingCategory ? "Update Category" : "Create Category"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* ================= QUICK ADD CATEGORY MODAL (INLINE) ================= */}
+      <Dialog
+        open={quickAddCategoryOpen}
+        onClose={() => setQuickAddCategoryOpen(false)}
+        title="Quick Add Award Category"
+      >
+        <form onSubmit={handleSaveQuickCategory} className="space-y-4">
+          <div>
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
+              Category Name <span className="text-destructive">*</span>
+            </label>
+            <Input
+              value={quickAddForm.name}
+              onChange={(e) => setQuickAddForm({ ...quickAddForm, name: e.target.value })}
+              placeholder="e.g. Organic Certification"
+              required
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-text-primary dark:text-white block mb-1">
+              Description (Optional)
+            </label>
+            <textarea
+              value={quickAddForm.description}
+              onChange={(e) => setQuickAddForm({ ...quickAddForm, description: e.target.value })}
+              rows={2}
+              className="w-full px-3 py-2 text-sm border border-border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Brief description..."
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-border dark:border-gray-700">
+            <Button type="button" variant="outline" onClick={() => setQuickAddCategoryOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={quickAddSaving}>
+              {quickAddSaving ? "Creating..." : "Create & Select"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* ================= DELETE AWARD CONFIRMATION ================= */}
       <ConfirmDialog
         open={deleteConfirmOpen}
         onCancel={() => setDeleteConfirmOpen(false)}
-        onConfirm={handleDelete}
+        onConfirm={handleDeleteAward}
         title="Delete Award"
         message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
         confirmLabel={deleting ? "Deleting..." : "Delete"}
         loading={deleting}
+        danger={true}
+      />
+
+      {/* ================= DELETE CATEGORY CONFIRMATION ================= */}
+      <ConfirmDialog
+        open={categoryDeleteConfirmOpen}
+        onCancel={() => setCategoryDeleteConfirmOpen(false)}
+        onConfirm={confirmDeleteCategory}
+        title="Delete Award Category"
+        message={`Are you sure you want to delete category "${categoryDeleteTarget?.name}"?`}
+        confirmLabel={categoryDeleting ? "Deleting..." : "Delete Category"}
+        loading={categoryDeleting}
         danger={true}
       />
     </div>

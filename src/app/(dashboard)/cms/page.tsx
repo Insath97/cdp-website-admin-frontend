@@ -7,7 +7,6 @@ import {
   Plus,
   RefreshCw,
   Loader2,
-  Trash2,
   Image as ImageIcon,
   ExternalLink,
   Search,
@@ -59,7 +58,13 @@ function CMSContent() {
         Object.keys(pageSections).forEach((sec) => {
           const secItems = pageSections[sec];
           if (Array.isArray(secItems)) {
-            secItems.forEach((it) => flatList.push(it));
+            secItems.forEach((it) => {
+              // Filter out rogue/extraneous test items and obsolete repeaters
+              if (it.section === "general" && it.key === "test") return;
+              if (page === "awards" && it.section === "general") return;
+              if (page === "awards" && it.section === "showcase" && it.key === "items") return;
+              flatList.push(it);
+            });
           }
         });
 
@@ -207,13 +212,6 @@ function CMSContent() {
       value: "",
     });
     setShowAddModal(false);
-  };
-
-  const handleRemoveItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-    const newFiles = { ...fileMap };
-    delete newFiles[index];
-    setFileMap(newFiles);
   };
 
   // Filter items by search
@@ -545,15 +543,6 @@ function CMSContent() {
                               />
                             )}
                           </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveItem(originalIndex)}
-                            className="mt-1 text-text-muted hover:text-red-500"
-                            title="Remove field"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
                         </div>
                       </div>
                     );

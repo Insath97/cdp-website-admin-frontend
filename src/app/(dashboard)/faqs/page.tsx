@@ -31,6 +31,7 @@ import { PermissionGuard } from "@/components/auth/permission-guard";
 export default function FaqsPage() {
   const { toast } = useToast();
   const perPageSelectId = useId();
+  const categoryPerPageSelectId = useId();
 
   // Active Tab: "faqs" | "types"
   const [activeTab, setActiveTab] = useState<"faqs" | "types">("faqs");
@@ -75,6 +76,14 @@ export default function FaqsPage() {
     is_active: true,
   });
   const [savingType, setSavingType] = useState(false);
+
+  // Quick Add Category Modal state (from inside FAQ form)
+  const [quickAddCategoryOpen, setQuickAddCategoryOpen] = useState(false);
+  const [quickAddForm, setQuickAddForm] = useState({
+    name: "",
+    description: "",
+  });
+  const [quickAddSaving, setQuickAddSaving] = useState(false);
 
   // Delete Confirm Dialog state
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -126,6 +135,10 @@ export default function FaqsPage() {
   // Initial load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam === "types" || tabParam === "categories") {
+      setActiveTab("types");
+    }
     const searchParam = params.get("search");
     if (searchParam) {
       setFaqSearch(searchParam);
@@ -251,8 +264,12 @@ export default function FaqsPage() {
         await faqTypeService.update(editingType.id, typeForm);
         toast("Category updated successfully", "success");
       } else {
-        await faqTypeService.create(typeForm);
+        const created = await faqTypeService.create(typeForm);
         toast("Category created successfully", "success");
+        const newId = (created as any)?.id || (created as any)?.data?.id;
+        if (newId) {
+          setFaqForm((prev) => ({ ...prev, faq_type_id: Number(newId) }));
+        }
       }
       setTypeModalOpen(false);
       fetchFaqTypes();
@@ -260,6 +277,37 @@ export default function FaqsPage() {
       toast("Failed to save category", "error");
     } finally {
       setSavingType(false);
+    }
+  };
+
+  // Quick Add Category from inside FAQ Form
+  const handleSaveQuickCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickAddForm.name.trim()) {
+      toast("Category name is required", "warning");
+      return;
+    }
+    try {
+      setQuickAddSaving(true);
+      const res = await faqTypeService.create({
+        name: quickAddForm.name.trim(),
+        description: quickAddForm.description.trim() || undefined,
+        is_active: true,
+      });
+
+      toast("Category created and selected", "success");
+      setQuickAddCategoryOpen(false);
+      setQuickAddForm({ name: "", description: "" });
+
+      await fetchFaqTypes();
+      const newId = (res as any)?.id || (res as any)?.data?.id;
+      if (newId) {
+        setFaqForm((prev) => ({ ...prev, faq_type_id: Number(newId) }));
+      }
+    } catch {
+      toast("Failed to create category", "error");
+    } finally {
+      setQuickAddSaving(false);
     }
   };
 
@@ -275,7 +323,21 @@ export default function FaqsPage() {
       } else {
         await faqTypeService.delete(deleteTarget.id);
         toast("Category deleted successfully", "success");
-        fetchFaqTypes();
+        const deletedId = deleteTarget.id;
+        setDeleteConfirmOpen(false);
+        setDeleteTarget(null);
+        await fetchFaqTypes();
+        setFaqForm((prev) => {
+          if (prev.faq_type_id === deletedId) {
+            const remaining = faqTypes.filter((t) => t.id !== deletedId);
+            return {
+              ...prev,
+              faq_type_id: remaining[0]?.id || 0,
+            };
+          }
+          return prev;
+        });
+        return;
       }
       setDeleteConfirmOpen(false);
       setDeleteTarget(null);
@@ -324,8 +386,11 @@ export default function FaqsPage() {
             type="button"
             role="tab"
             aria-selected={activeTab === "faqs"}
-            onClick={() => setActiveTab("faqs")}
-            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors ${
+            onClick={() => {
+              setActiveTab("faqs");
+              window.history.replaceState(null, "", "/faqs?tab=faqs");
+            }}
+            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
               activeTab === "faqs"
                 ? "border-primary text-primary font-semibold"
                 : "border-transparent text-text-muted hover:text-text-primary hover:border-gray-300 dark:text-gray-400"
@@ -338,8 +403,11 @@ export default function FaqsPage() {
             type="button"
             role="tab"
             aria-selected={activeTab === "types"}
-            onClick={() => setActiveTab("types")}
-            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors ${
+            onClick={() => {
+              setActiveTab("types");
+              window.history.replaceState(null, "", "/faqs?tab=categories");
+            }}
+            className={`inline-flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
               activeTab === "types"
                 ? "border-primary text-primary font-semibold"
                 : "border-transparent text-text-muted hover:text-text-primary hover:border-gray-300 dark:text-gray-400"
@@ -616,43 +684,33 @@ export default function FaqsPage() {
                             {type.is_active ? "Active" : "Inactive"}
                           </button>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <div className="relative inline-block text-left">
-                            <button
-                              type="button"
-                              onClick={() => setOpenDropdownId(openDropdownId === `type-${type.id}` ? null : `type-${type.id}`)}
-                              aria-label={`Open actions for category ${type.name}`}
-                              className="p-1.5 text-text-muted hover:text-text-primary dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </button>
-                            {openDropdownId === `type-${type.id}` && (
-                              <div
-                                role="menu"
-                                className="absolute right-0 mt-2 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-border dark:border-gray-700 py-1 z-10"
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
+                          <div className="flex items-center justify-end gap-2">
+                            <PermissionGuard permission="Faq Type Update">
+                              <button
+                                type="button"
+                                onClick={() => openEditTypeModal(type)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-text-primary dark:text-white font-medium transition-colors cursor-pointer"
+                                title={`Edit category ${type.name}`}
                               >
-                                <button
-                                  type="button"
-                                  role="menuitem"
-                                  onClick={() => openEditTypeModal(type)}
-                                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                                >
-                                  <Edit2 className="h-3.5 w-3.5" /> Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  role="menuitem"
-                                  onClick={() => {
-                                    setDeleteTarget({ id: type.id, title: type.name, type: "type" });
-                                    setDeleteConfirmOpen(true);
-                                    setOpenDropdownId(null);
-                                  }}
-                                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" /> Delete
-                                </button>
-                              </div>
-                            )}
+                                <Edit2 className="h-3.5 w-3.5 text-primary" />
+                                <span>Edit</span>
+                              </button>
+                            </PermissionGuard>
+                            <PermissionGuard permission="Faq Type Delete">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setDeleteTarget({ id: type.id, title: type.name, type: "type" });
+                                  setDeleteConfirmOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 font-medium transition-colors cursor-pointer"
+                                title={`Delete category ${type.name}`}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>Delete</span>
+                              </button>
+                            </PermissionGuard>
                           </div>
                         </td>
                       </tr>
@@ -664,7 +722,24 @@ export default function FaqsPage() {
 
             {/* Pagination */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border dark:border-gray-700 text-xs text-text-muted dark:text-gray-400">
-              <span>Total categories: {typeTotalCount}</span>
+              <div className="flex items-center gap-2">
+                <label htmlFor={categoryPerPageSelectId}>Rows per page:</label>
+                <select
+                  id={categoryPerPageSelectId}
+                  value={typePerPage}
+                  onChange={(e) => {
+                    setTypePerPage(Number(e.target.value));
+                    setTypeCurrentPage(1);
+                  }}
+                  className="rounded-md border border-border dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-xs text-text-primary dark:text-white"
+                >
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>Total: {typeTotalCount}</span>
+              </div>
               <nav aria-label="Category pagination" className="flex items-center gap-1">
                 <Button
                   variant="outline"
@@ -701,8 +776,27 @@ export default function FaqsPage() {
       >
         <form onSubmit={handleSaveFaq} className="space-y-4">
           <div>
+            {(() => {
+              const selectedCat = faqTypes.find((t) => t.id === faqForm.faq_type_id);
+              return (
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-text-primary dark:text-white">
+                    Category *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuickAddForm({ name: "", description: "" });
+                      setQuickAddCategoryOpen(true);
+                    }}
+                    className="text-[11px] font-medium text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="h-3 w-3" /> Quick Add
+                  </button>
+                </div>
+              );
+            })()}
             <Select
-              label="Category"
               required
               value={faqForm.faq_type_id}
               onChange={(e) => setFaqForm({ ...faqForm, faq_type_id: Number(e.target.value) })}
@@ -833,6 +927,59 @@ export default function FaqsPage() {
             </Button>
             <Button type="submit" disabled={savingType}>
               {savingType ? "Saving..." : editingType ? "Update Category" : "Create Category"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* Quick Add Category Modal (from inside FAQ form) */}
+      <Dialog
+        open={quickAddCategoryOpen}
+        onClose={() => setQuickAddCategoryOpen(false)}
+        title="Quick Add FAQ Category"
+      >
+        <form onSubmit={handleSaveQuickCategory} className="space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-text-primary dark:text-white block mb-1.5">
+              Category Name *
+            </label>
+            <Input
+              required
+              value={quickAddForm.name}
+              onChange={(e) =>
+                setQuickAddForm({ ...quickAddForm, name: e.target.value })
+              }
+              placeholder="e.g. Agronomy & Processing"
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-text-primary dark:text-white block mb-1.5">
+              Description (Optional)
+            </label>
+            <textarea
+              value={quickAddForm.description}
+              onChange={(e) =>
+                setQuickAddForm({ ...quickAddForm, description: e.target.value })
+              }
+              rows={2}
+              className="w-full text-sm rounded-lg border border-border bg-white p-3 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+              placeholder="Brief description of this FAQ category..."
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-border dark:border-gray-700">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setQuickAddCategoryOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" size="sm" disabled={quickAddSaving}>
+              {quickAddSaving ? "Creating..." : "Create & Select"}
             </Button>
           </div>
         </form>

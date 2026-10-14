@@ -73,12 +73,6 @@ export const navigation: NavGroup[] = [
         permission: "Award Index",
       },
       {
-        label: "Award Types",
-        href: "/award-types",
-        icon: Award,
-        permission: "Award Type Index",
-      },
-      {
         label: "Testimonials",
         href: "/testimonials",
         icon: MessageSquareQuote,

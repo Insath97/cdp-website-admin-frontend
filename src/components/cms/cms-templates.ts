@@ -121,17 +121,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "category", label: "Category Tag", type: "text", placeholder: "Harvest / Nursery / Community" },
   ],
 
-  // Awards
-  "awards.showcase.items": [
-    { key: "title", label: "Award Title", type: "text", placeholder: "e.g. National Agricultural Excellence" },
-    { key: "organisation", label: "Awarding Body", type: "text", placeholder: "e.g. Ministry of Agriculture" },
-    { key: "year", label: "Year Awarded", type: "text", placeholder: "e.g. 2024" },
-    { key: "category", label: "Category", type: "text", placeholder: "e.g. Sustainable Agronomy" },
-    { key: "status", label: "Verification Status", type: "text", placeholder: "Verified / Pending verification" },
-    { key: "image", label: "Certificate / Trophy Image URL", type: "text", placeholder: "https://..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-award-line" },
-  ],
-
   // Plantations Estates
   "plantations.estates.items": [
     { key: "id", label: "Estate Slug / ID", type: "text", placeholder: "e.g. rajanganaya-paddy-estate" },
@@ -361,7 +350,9 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "hero", key: "title", label: "Awards Page Title", type: "text", value: "Awards, certifications & the standard behind them" },
     { section: "hero", key: "intro", label: "Awards Page Intro", type: "textarea", value: "Recognition is worth publishing only when it can be verified. This is where CDP's awards and accreditations live — each one labelled honestly for what it is." },
     { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "showcase", key: "items", label: "Verified Awards & Certifications List", type: "textarea", value: "[]", isRepeater: true },
+    { section: "showcase", key: "eyebrow", label: "Showcase Section Eyebrow", type: "text", value: "Recognition" },
+    { section: "showcase", key: "title", label: "Showcase Section Title", type: "text", value: "Awards & recognitions worth standing behind" },
+    { section: "showcase", key: "intro", label: "Showcase Section Intro", type: "textarea", value: "Recognitions, agricultural certifications and industry accreditations earned across our Sri Lankan estate operations." },
     { section: "standards", key: "step_1", label: "Standard Step 1 Title", type: "text", value: "Logged with evidence" },
     { section: "standards", key: "step_1_desc", label: "Standard Step 1 Description", type: "textarea", value: "Every award is recorded together with its awarding body, year and supporting documentation." },
     { section: "standards", key: "step_2", label: "Standard Step 2 Title", type: "text", value: "Independently checked" },

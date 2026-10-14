@@ -37,7 +37,7 @@ function UserAvatar({ name, size = "md" }: { name: string; size?: "sm" | "md" })
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, role, permissions, logout } = useAuthStore();
+  const { user, role, permissions, logout, hasPermission } = useAuthStore();
   const {
     sidebarOpen,
     mobileSidebarOpen,
@@ -60,7 +60,7 @@ export function Sidebar() {
       ...group,
       items: group.items.filter((item) => {
         if (!item.permission) return true;
-        return permissions.includes(item.permission);
+        return hasPermission(item.permission);
       }),
     }))
     .filter((group) => group.items.length > 0);

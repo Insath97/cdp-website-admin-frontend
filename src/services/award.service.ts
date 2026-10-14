@@ -75,24 +75,84 @@ export const awardService = {
     return response.data.data;
   },
 
-  create: async (data: FormData | Partial<Award>): Promise<Award> => {
-    let payload = data;
+  create: async (data: FormData | Partial<Award> | Record<string, any>): Promise<Award> => {
+    let payload: any = data;
     const headers: Record<string, string> = {};
+
     if (data instanceof FormData) {
       headers["Content-Type"] = "multipart/form-data";
+    } else if (
+      data &&
+      (data.thumbnail_image instanceof File ||
+        (Array.isArray(data.galleries) && data.galleries.some((g: any) => g instanceof File)))
+    ) {
+      const fd = new FormData();
+      Object.entries(data).forEach(([key, val]) => {
+        if (val === undefined || val === null) return;
+        if (key === "galleries" && Array.isArray(val)) {
+          val.forEach((item) => {
+            if (item instanceof File) {
+              fd.append("galleries[]", item);
+            }
+          });
+        } else if (key === "thumbnail_image") {
+          if (val instanceof File) {
+            fd.append("thumbnail_image", val);
+          }
+        } else if (typeof val === "boolean") {
+          fd.append(key, val ? "1" : "0");
+        } else {
+          fd.append(key, String(val));
+        }
+      });
+      payload = fd;
+      headers["Content-Type"] = "multipart/form-data";
     }
+
     const response = await apiClient.post("/awards", payload, { headers });
     return response.data.data || response.data;
   },
 
-  update: async (id: number, data: FormData | Partial<Award>): Promise<Award> => {
+  update: async (id: number, data: FormData | Partial<Award> | Record<string, any>): Promise<Award> => {
+    let payload: any = data;
     const headers: Record<string, string> = {};
-    if (data instanceof FormData) {
-      headers["Content-Type"] = "multipart/form-data";
-      if (!data.has("_method")) {
-        data.append("_method", "PUT");
+
+    const hasFiles =
+      data instanceof FormData ||
+      (data &&
+        (data.thumbnail_image instanceof File ||
+          (Array.isArray(data.galleries) && data.galleries.some((g: any) => g instanceof File))));
+
+    if (hasFiles) {
+      let fd: FormData;
+      if (data instanceof FormData) {
+        fd = data;
+      } else {
+        fd = new FormData();
+        Object.entries(data).forEach(([key, val]) => {
+          if (val === undefined || val === null) return;
+          if (key === "galleries" && Array.isArray(val)) {
+            val.forEach((item) => {
+              if (item instanceof File) {
+                fd.append("galleries[]", item);
+              }
+            });
+          } else if (key === "thumbnail_image") {
+            if (val instanceof File) {
+              fd.append("thumbnail_image", val);
+            }
+          } else if (typeof val === "boolean") {
+            fd.append(key, val ? "1" : "0");
+          } else {
+            fd.append(key, String(val));
+          }
+        });
       }
-      const response = await apiClient.post(`/awards/${id}`, data, { headers });
+      if (!fd.has("_method")) {
+        fd.append("_method", "PUT");
+      }
+      headers["Content-Type"] = "multipart/form-data";
+      const response = await apiClient.post(`/awards/${id}`, fd, { headers });
       return response.data.data || response.data;
     } else {
       const response = await apiClient.put(`/awards/${id}`, data);
