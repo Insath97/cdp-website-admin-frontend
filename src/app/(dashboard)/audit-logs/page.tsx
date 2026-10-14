@@ -17,6 +17,7 @@ import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/lib/auth";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { useToast } from "@/components/ui/toast";
+import { Select } from "@/components/ui/select";
 import type { ActivityLog } from "@/types";
 
 interface PaginatedData {
@@ -207,31 +208,31 @@ function AuditLogsContent() {
       {showFilters && (
         <div className="rounded-xl border border-border bg-surface p-5 dark:border-gray-700 dark:bg-gray-800">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Module</label>
-              <select
+            <div className="min-w-0">
+              <Select
+                label="Module"
                 value={moduleFilter}
                 onChange={(e) => setModuleFilter(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                className="w-full min-w-0"
               >
                 <option value="">All Modules</option>
                 {modules.map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
-              </select>
+              </Select>
             </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Action</label>
-              <select
+            <div className="min-w-0">
+              <Select
+                label="Action"
                 value={actionFilter}
                 onChange={(e) => setActionFilter(e.target.value)}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                className="w-full min-w-0"
               >
                 <option value="">All Actions</option>
                 {actions.map((a) => (
                   <option key={a} value={a}>{a.charAt(0).toUpperCase() + a.slice(1)}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-medium text-text-muted dark:text-gray-400">Start Date</label>

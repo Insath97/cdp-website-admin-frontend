@@ -22,6 +22,7 @@ import {
   REPEATER_SCHEMAS,
 } from "@/components/cms/cms-templates";
 import { CmsRepeaterEditor } from "@/components/cms/repeater-editor";
+import { Select } from "@/components/ui/select";
 
 function CMSContent() {
   const { hasPermission } = useAuthStore();
@@ -622,10 +623,8 @@ function CMSContent() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-text-muted">
-                  Field Type
-                </label>
-                <select
+                <Select
+                  label="Field Type"
                   value={newItem.type}
                   onChange={(e) =>
                     setNewItem({
@@ -633,7 +632,8 @@ function CMSContent() {
                       type: e.target.value as CmsContentType,
                     })
                   }
-                  className="mt-1 h-9 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  selectSize="sm"
+                  className="w-full text-xs"
                 >
                   <option value="text">Short Text</option>
                   <option value="textarea">Long Text / Paragraph / Repeater JSON</option>
@@ -641,7 +641,7 @@ function CMSContent() {
                   <option value="video">Video URL / File</option>
                   <option value="pdf">PDF Document</option>
                   <option value="link">Hyperlink</option>
-                </select>
+                </Select>
               </div>
 
               <div>

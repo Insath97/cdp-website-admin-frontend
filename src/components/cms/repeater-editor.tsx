@@ -12,6 +12,7 @@ import {
   Check,
   Eye,
 } from "lucide-react";
+import { Select } from "@/components/ui/select";
 
 export interface RepeaterFieldSchema {
   key: string;
@@ -272,43 +273,47 @@ export function CmsRepeaterEditor({
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {activeFields.map((field) => (
                 <div key={field.key}>
-                  <label className="block text-xs font-semibold text-text-primary dark:text-gray-300 mb-1">
-                    {field.label}
-                  </label>
                   {field.type === "textarea" ? (
-                    <textarea
-                      rows={3}
-                      value={editForm[field.key] ?? ""}
-                      placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, [field.key]: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                    />
+                    <div>
+                      <label className="block text-xs font-semibold text-text-primary dark:text-gray-300 mb-1">
+                        {field.label}
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={editForm[field.key] ?? ""}
+                        placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, [field.key]: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                      />
+                    </div>
                   ) : field.type === "select" && field.options ? (
-                    <select
-                      value={editForm[field.key] ?? ""}
+                    <Select
+                      label={field.label}
+                      value={editForm[field.key] ?? field.defaultValue ?? ""}
                       onChange={(e) =>
                         setEditForm({ ...editForm, [field.key]: e.target.value })
                       }
-                      className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                    >
-                      {field.options.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type={field.type === "number" ? "number" : "text"}
-                      value={editForm[field.key] ?? ""}
-                      placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, [field.key]: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                      options={field.options}
+                      selectSize="md"
+                      className="w-full text-xs sm:text-sm"
                     />
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-semibold text-text-primary dark:text-gray-300 mb-1">
+                        {field.label}
+                      </label>
+                      <input
+                        type={field.type === "number" ? "number" : "text"}
+                        value={editForm[field.key] ?? ""}
+                        placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, [field.key]: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                      />
+                    </div>
                   )}
                 </div>
               ))}

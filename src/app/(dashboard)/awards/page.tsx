@@ -32,6 +32,7 @@ import {
 } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Dialog } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
@@ -1058,22 +1059,20 @@ export default function AwardsPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-medium text-foreground block mb-1">
-                Award Category <span className="text-destructive">*</span>
-              </label>
-              <select
+            <div className="min-w-0">
+              <Select
+                label="Award Category"
+                required
                 value={form.award_type_id}
                 onChange={(e) => setForm({ ...form, award_type_id: e.target.value })}
-                className="w-full px-3 py-2 text-sm border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                required
+                className="w-full min-w-0"
               >
                 {awardTypes.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div>

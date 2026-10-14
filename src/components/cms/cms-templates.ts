@@ -35,12 +35,24 @@ export const CMS_PAGES = [
 export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
   // Testimonials
   "home.testimonials.items": [
-    { key: "quote", label: "Quote Text", type: "textarea", placeholder: "Quote from partner or investor..." },
-    { key: "attribution", label: "Person Name", type: "text", placeholder: "e.g. Sunil Perera" },
-    { key: "role", label: "Role / Profession", type: "text", placeholder: "e.g. Registered Agro Investor" },
-    { key: "location", label: "Location", type: "text", placeholder: "e.g. Colombo, Sri Lanka" },
-    { key: "structure", label: "Investment Structure Tag", type: "text", placeholder: "e.g. Paddy Season Structure" },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-plant-line" },
+    { key: "quote", label: "Review / Quote Text", type: "textarea", placeholder: "Quote or review from client or investor..." },
+    { key: "attribution", label: "Reviewer Name", type: "text", placeholder: "e.g. Sunil Perera" },
+    { key: "role", label: "Designation / Role", type: "text", placeholder: "e.g. Private Investor, Agro Participant" },
+    { key: "location", label: "City / Location", type: "text", placeholder: "e.g. Colombo, Sri Lanka" },
+    {
+      key: "rating",
+      label: "Star Rating Awarded (1 to 5 Stars)",
+      type: "select",
+      defaultValue: "5",
+      options: [
+        { label: "5 Stars (★★★★★) — Exceptional", value: "5" },
+        { label: "4 Stars (★★★★☆) — Very Good", value: "4" },
+        { label: "3 Stars (★★★☆☆) — Good", value: "3" },
+        { label: "2 Stars (★★☆☆☆) — Fair", value: "2" },
+        { label: "1 Star (★☆☆☆☆) — Poor", value: "1" },
+      ],
+    },
+    { key: "avatar", label: "Avatar / Photo URL", type: "image", placeholder: "Upload or enter avatar image URL..." },
   ],
 
   // Why CDP Core Values

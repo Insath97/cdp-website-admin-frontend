@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Save, ArrowLeft, Loader2, RefreshCw, Upload, X, Image as ImageIcon } from "lucide-react";
 import { blogService } from "@/services";
 import { useToast } from "@/components/ui/toast";
+import { Select } from "@/components/ui/select";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import type { Blog } from "@/services/blog.service";
 
@@ -193,17 +194,17 @@ function EditBlogContent({ blogId }: { blogId: string }) {
               />
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">Status</label>
-              <select
+            <div className="min-w-0">
+              <Select
+                label="Status"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as "draft" | "published" | "archived" })}
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                className="w-full min-w-0"
               >
                 <option value="published">Published (Approved)</option>
                 <option value="draft">Draft (Pending)</option>
                 <option value="archived">Archived</option>
-              </select>
+              </Select>
             </div>
           </div>
 

@@ -37,6 +37,7 @@ import {
 } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Dialog } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Switch } from "@/components/ui/switch";
@@ -976,47 +977,39 @@ export default function LeadershipPage() {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label
-                            htmlFor="leader-tier"
-                            className="block text-xs font-semibold text-text-primary dark:text-white mb-1.5"
-                          >
-                            Category Section <span className="text-red-500" aria-hidden="true">*</span>
-                          </label>
-                          <select
+                        <div className="min-w-0">
+                          <Select
                             id="leader-tier"
+                            label="Category Section"
+                            required
                             value={form.tier}
                             onChange={(e) =>
                               setForm({ ...form, tier: e.target.value as LeadershipTier })
                             }
-                            className="w-full text-xs rounded-lg border border-border bg-surface px-3 py-2 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                            required
+                            selectSize="sm"
+                            className="w-full min-w-0"
                           >
                             <option value="executive">Executive Team</option>
                             <option value="group_head">Group Heads</option>
                             <option value="founder">Founder & Chairman</option>
-                          </select>
+                          </Select>
                         </div>
 
-                        <div>
-                          <label
-                            htmlFor="leader-directorate"
-                            className="block text-xs font-semibold text-text-primary dark:text-white mb-1.5"
-                          >
-                            Governance Directorate
-                          </label>
-                          <select
+                        <div className="min-w-0">
+                          <Select
                             id="leader-directorate"
+                            label="Governance Directorate"
                             value={form.category}
                             onChange={(e) => setForm({ ...form, category: e.target.value })}
-                            className="w-full text-xs rounded-lg border border-border bg-surface px-3 py-2 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                            selectSize="sm"
+                            className="w-full min-w-0"
                           >
                             {CATEGORY_OPTIONS.map((cat) => (
                               <option key={cat} value={cat}>
                                 {cat}
                               </option>
                             ))}
-                          </select>
+                          </Select>
                         </div>
                       </div>
 

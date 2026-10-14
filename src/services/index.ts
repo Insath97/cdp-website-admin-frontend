@@ -18,6 +18,7 @@ export { faqTypeService } from "./faq-type.service";
 export { awardTypeService } from "./award-type.service";
 export { awardService } from "./award.service";
 export { leadershipService } from "./leadership.service";
+export { testimonialService } from "./testimonial.service";
 
 export type {
   LeadershipMember,
@@ -120,3 +121,9 @@ export type {
   AwardListResponse,
   AwardQueryParams,
 } from "./award.service";
+
+export type {
+  Testimonial,
+  TestimonialListResponse,
+  TestimonialQueryParams,
+} from "./testimonial.service";

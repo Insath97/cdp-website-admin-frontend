@@ -18,6 +18,7 @@ import {
   Award,
   Trophy,
   UserCheck,
+  MessageSquareQuote,
 } from "lucide-react";
 
 export interface NavItem {
@@ -76,6 +77,12 @@ export const navigation: NavGroup[] = [
         href: "/award-types",
         icon: Award,
         permission: "Award Type Index",
+      },
+      {
+        label: "Testimonials",
+        href: "/testimonials",
+        icon: MessageSquareQuote,
+        permission: "Testimonial Index",
       },
     ],
   },

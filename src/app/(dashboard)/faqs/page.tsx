@@ -22,6 +22,7 @@ import {
 } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Dialog } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
@@ -368,16 +369,17 @@ export default function FaqsPage() {
                   className="pl-9"
                 />
               </div>
-              <div className="flex items-center gap-2 min-w-[200px]">
-                <Filter className="h-4 w-4 text-text-muted dark:text-gray-400 shrink-0" />
-                <select
+              <div className="min-w-[200px] flex-1 sm:flex-initial">
+                <Select
+                  icon={<Filter className="h-3.5 w-3.5" />}
+                  selectSize="sm"
                   value={selectedFaqTypeFilter}
                   onChange={(e) => {
                     setSelectedFaqTypeFilter(e.target.value);
                     setFaqCurrentPage(1);
                   }}
-                  className="w-full text-xs rounded-lg border border-border bg-white px-3 py-2 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                   aria-label="Filter by category"
+                  className="w-full text-xs"
                 >
                   <option value="">All Categories</option>
                   {faqTypes.map((t) => (
@@ -385,7 +387,7 @@ export default function FaqsPage() {
                       {t.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             </div>
           </div>
@@ -699,14 +701,12 @@ export default function FaqsPage() {
       >
         <form onSubmit={handleSaveFaq} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-text-primary dark:text-white mb-1.5">
-              Category *
-            </label>
-            <select
+            <Select
+              label="Category"
+              required
               value={faqForm.faq_type_id}
               onChange={(e) => setFaqForm({ ...faqForm, faq_type_id: Number(e.target.value) })}
-              className="w-full text-sm rounded-lg border border-border bg-white px-3 py-2 text-text-primary focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-              required
+              className="w-full text-sm"
             >
               <option value={0} disabled>Select a category</option>
               {faqTypes.map((t) => (
@@ -714,7 +714,7 @@ export default function FaqsPage() {
                   {t.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div>
