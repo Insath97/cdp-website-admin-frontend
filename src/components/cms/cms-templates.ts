@@ -26,6 +26,7 @@ export const CMS_PAGES = [
   { id: "insights", label: "Insights & News" },
   { id: "legal", label: "Legal & Compliance" },
   { id: "contact", label: "Contact & Inquiries" },
+  { id: "faq", label: "FAQ Knowledge Base" },
   { id: "investor-login", label: "Investor Portal" },
   { id: "investor-relations", label: "Investor Relations" },
   { id: "my-investments", label: "Portfolio Verification Portal" },
@@ -475,6 +476,13 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "hero", key: "badge", label: "Security Badge", type: "text", value: "Investor Security Portal" },
     { section: "hero", key: "title", label: "Lookup Heading", type: "text", value: "Check Your Investment Details" },
     { section: "hero", key: "intro", label: "Lookup Subtitle", type: "textarea", value: "Verify your active plantation portfolio, projected returns schedule and asset allocation with Ceylon Development Plantation (Pvt) Ltd." },
+  ],
+
+  faq: [
+    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Knowledge Base" },
+    { section: "hero", key: "title", label: "Page Title", type: "text", value: "Frequently Asked Questions" },
+    { section: "hero", key: "intro", label: "Page Intro", type: "textarea", value: "Plain-language, verified answers regarding Ceylon Development Plantation's agricultural operations, investor governance, payout ledgers and risk management." },
+    { section: "hero", key: "image", label: "Hero Banner Image URL", type: "image", value: "/plantation-images/1f478e1c355d44d6e8a7d6f785670fb4.jpg" },
   ],
 
   global: [
