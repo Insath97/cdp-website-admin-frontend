@@ -650,12 +650,6 @@ export default function LeadershipPage() {
 
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5 text-[11px] text-text-muted">
                                   <span>{item.qualifications}</span>
-                                  {item.division && (
-                                    <>
-                                      <span>•</span>
-                                      <span className="truncate">{item.division}</span>
-                                    </>
-                                  )}
                                 </div>
 
                                 {item.message && (
@@ -793,7 +787,7 @@ export default function LeadershipPage() {
                 }`}
               >
                 <Award className="h-3.5 w-3.5" />
-                <span>2. Qualifications & Domain</span>
+                <span>2. Qualifications</span>
                 {form.qualifications ? (
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Section completed" />
                 ) : (
@@ -994,38 +988,6 @@ export default function LeadershipPage() {
                             <option value="founder">Founder & Chairman</option>
                           </Select>
                         </div>
-
-                        <div className="min-w-0">
-                          <Select
-                            id="leader-directorate"
-                            label="Governance Directorate"
-                            value={form.category}
-                            onChange={(e) => setForm({ ...form, category: e.target.value })}
-                            selectSize="sm"
-                            className="w-full min-w-0"
-                          >
-                            {CATEGORY_OPTIONS.map((cat) => (
-                              <option key={cat} value={cat}>
-                                {cat}
-                              </option>
-                            ))}
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="leader-linkedin"
-                          className="block text-xs font-semibold text-text-primary dark:text-white mb-1.5"
-                        >
-                          LinkedIn Profile Link (Optional)
-                        </label>
-                        <Input
-                          id="leader-linkedin"
-                          value={form.linkedin}
-                          onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
-                          placeholder="https://linkedin.com/in/username"
-                        />
                       </div>
                     </div>
                   </div>
@@ -1074,44 +1036,6 @@ export default function LeadershipPage() {
                           value={form.credentials}
                           onChange={(e) => setForm({ ...form, credentials: e.target.value })}
                           placeholder="e.g. Ph.D., M.Sc., B.Sc. Agric"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border">
-                      <div>
-                        <label
-                          htmlFor="leader-division"
-                          className="block text-xs font-semibold text-text-primary dark:text-white mb-1"
-                        >
-                          Division / Directorate
-                        </label>
-                        <p className="text-[11px] text-text-muted mb-1.5">
-                          Operational group unit or estate council division
-                        </p>
-                        <Input
-                          id="leader-division"
-                          value={form.division}
-                          onChange={(e) => setForm({ ...form, division: e.target.value })}
-                          placeholder="e.g. Group Direction & Enterprise Performance"
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="leader-focus"
-                          className="block text-xs font-semibold text-text-primary dark:text-white mb-1"
-                        >
-                          Specialized Focus Area
-                        </label>
-                        <p className="text-[11px] text-text-muted mb-1.5">
-                          Key agronomic, technical, or strategic discipline
-                        </p>
-                        <Input
-                          id="leader-focus"
-                          value={form.focus}
-                          onChange={(e) => setForm({ ...form, focus: e.target.value })}
-                          placeholder="e.g. Precision Agronomy, IoT Telemetry & Automation"
                         />
                       </div>
                     </div>

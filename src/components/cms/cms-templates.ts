@@ -17,18 +17,12 @@ export const CMS_PAGES = [
   { id: "life-at-cdp", label: "Life at CDP / Memory Book" },
   { id: "careers", label: "Careers & Culture" },
   { id: "awards", label: "Awards & Certifications" },
-  { id: "plantations", label: "Our Plantations Explorer" },
   { id: "investments", label: "Investment Opportunities" },
-  { id: "how-it-works", label: "How It Works" },
   { id: "calculator", label: "ROI Estimator" },
-  { id: "profit-calculator", label: "Profit Calculator Rates" },
-  { id: "sustainability", label: "Sustainability & CSR" },
   { id: "insights", label: "Insights & News" },
   { id: "legal", label: "Legal & Compliance" },
   { id: "contact", label: "Contact & Inquiries" },
   { id: "faq", label: "FAQ Knowledge Base" },
-  { id: "investor-login", label: "Investor Portal" },
-  { id: "investor-relations", label: "Investor Relations" },
   { id: "my-investments", label: "Portfolio Verification Portal" },
   { id: "global", label: "Global / Header & Footer" },
 ];
@@ -84,12 +78,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "focus", label: "Agricultural Focus", type: "text", placeholder: "e.g. Paddy — flagship estate" },
   ],
 
-  // Strategic Partnerships
-  "about.partnerships.items": [
-    { key: "title", label: "Partner Name / Sector", type: "text", placeholder: "e.g. Farmer Communities" },
-    { key: "body", label: "Partnership Description", type: "textarea", placeholder: "Fair-price sourcing..." },
-    { key: "status", label: "Status", type: "text", placeholder: "Ongoing / Verified" },
-  ],
 
   // Our Investors List
   "about.investors.list": [
@@ -109,12 +97,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "linkedin", label: "LinkedIn Profile URL", type: "text", placeholder: "https://linkedin.com/in/..." },
   ],
 
-  // Governance Cards
-  "leadership.governance.cards": [
-    { key: "title", label: "Governance Pillar", type: "text", placeholder: "e.g. Documented Decision-Making" },
-    { key: "body", label: "Description", type: "textarea", placeholder: "Operational accountability..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-shield-keyhole-line" },
-  ],
 
   // Life at CDP Moments
   "life-at-cdp.moments.items": [
@@ -130,59 +112,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "category", label: "Category Tag", type: "text", placeholder: "Harvest / Nursery / Community" },
   ],
 
-  // Plantations Estates
-  "plantations.estates.items": [
-    { key: "id", label: "Estate Slug / ID", type: "text", placeholder: "e.g. rajanganaya-paddy-estate" },
-    { key: "name", label: "Estate Name", type: "text", placeholder: "e.g. Rajanganaya Flagship Estate" },
-    { key: "crop", label: "Primary Crop", type: "text", placeholder: "e.g. Traditional & Export Paddy" },
-    { key: "district", label: "District", type: "text", placeholder: "e.g. Anuradhapura" },
-    { key: "province", label: "Province", type: "text", placeholder: "e.g. North Central" },
-    { key: "areaHa", label: "Area (Hectares)", type: "number", placeholder: "185" },
-    { key: "established", label: "Established Year", type: "text", placeholder: "2019" },
-    { key: "status", label: "Development Status", type: "text", placeholder: "Operational / Expanding" },
-    { key: "summary", label: "Short Summary", type: "textarea", placeholder: "Primary grain production center..." },
-    { key: "image", label: "Cover Image URL", type: "text", placeholder: "https://..." },
-    { key: "soilType", label: "Soil Type", type: "text", placeholder: "e.g. Red-Yellow Podzolic" },
-    { key: "waterSource", label: "Water Source", type: "text", placeholder: "e.g. Tank Cascade Irrigation" },
-  ],
-
-  // Journey Steps
-  "how-it-works.journey.steps": [
-    { key: "step", label: "Step Number", type: "text", placeholder: "01" },
-    { key: "title", label: "Stage Title", type: "text", placeholder: "e.g. Select Project & Allocation" },
-    { key: "body", label: "Stage Description", type: "textarea", placeholder: "Detailed steps..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-file-list-3-line" },
-  ],
-
-  // Sustainability Pillars
-  "sustainability.pillars.items": [
-    { key: "title", label: "Pillar Name", type: "text", placeholder: "e.g. Soil Stewardship" },
-    { key: "body", label: "Summary", type: "textarea", placeholder: "Regenerative soil protocols..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-seedling-line" },
-  ],
-
-  // Profit Calculator Plans
-  "profit-calculator.plans.items": [
-    { key: "id", label: "Account ID", type: "text", placeholder: "standard" },
-    { key: "name", label: "Account Type Name", type: "text", placeholder: "Standard Investor Account" },
-    { key: "maturityProfitRate", label: "Maturity Profit Rate (%)", type: "number", placeholder: "24" },
-    { key: "monthlyProfitRate", label: "Monthly Profit Rate (%)", type: "number", placeholder: "18" },
-    { key: "description", label: "Description", type: "textarea", placeholder: "Standard individual investor terms..." },
-  ],
-
-  // Sustainability Impact Metrics
-  "sustainability.metrics.items": [
-    { key: "label", label: "Metric Label", type: "text", placeholder: "e.g. Farmers trained" },
-    { key: "value", label: "Metric Value", type: "text", placeholder: "e.g. 450+ or [VERIFY]" },
-    { key: "note", label: "Explanatory Note", type: "text", placeholder: "e.g. Cumulative programme reach" },
-  ],
-
-  // How It Works Principles
-  "how-it-works.principles.items": [
-    { key: "title", label: "Principle Title", type: "text", placeholder: "e.g. Nothing hidden" },
-    { key: "body", label: "Description", type: "textarea", placeholder: "Detailed principle commitment..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-eye-line" },
-  ],
 
   // Awards Verification Standards
   "awards.standards.steps": [
@@ -199,28 +128,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "status", label: "Status Badge", type: "text", placeholder: "Verified / In progress" },
   ],
 
-  // Investor Relations Quick Access
-  "investor-relations.quick_access.items": [
-    { key: "title", label: "Action Title", type: "text", placeholder: "e.g. Investor Login" },
-    { key: "body", label: "Description", type: "textarea", placeholder: "Action explanation..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-lock-2-line" },
-    { key: "action_label", label: "Button Label", type: "text", placeholder: "Sign in" },
-    { key: "action_url", label: "Target URL", type: "text", placeholder: "/investor-login" },
-  ],
-
-  // Investor Relations Commitments
-  "investor-relations.commitments.items": [
-    { key: "title", label: "Commitment Title", type: "text", placeholder: "e.g. Transparent disclosure" },
-    { key: "body", label: "Description", type: "textarea", placeholder: "Commitment details..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-eye-line" },
-  ],
-
-  // Investor Login Benefits
-  "investor-login.benefits.items": [
-    { key: "title", label: "Feature / Benefit Title", type: "text", placeholder: "e.g. Investment summaries" },
-    { key: "body", label: "Description", type: "textarea", placeholder: "Feature description..." },
-    { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-line-chart-line" },
-  ],
 
   // Legal Documents
   "legal.legal_docs.items": [
@@ -308,7 +215,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "history", key: "founding_text", label: "Origin Story Text", type: "textarea", value: "CDP was founded to bring professional management and modern agronomy to Sri Lankan plantation agriculture." },
     { section: "operations", key: "regions", label: "Regional Operating Footprint", type: "textarea", value: "[]", isRepeater: true },
     { section: "timeline", key: "milestones", label: "Corporate Timeline Milestones", type: "textarea", value: "[]", isRepeater: true },
-    { section: "partnerships", key: "items", label: "Strategic Partnerships", type: "textarea", value: "[]", isRepeater: true },
     { section: "investors", key: "eyebrow", label: "Investors Eyebrow", type: "text", value: "Capital Partners & Alliances" },
     { section: "investors", key: "title", label: "Investors Heading", type: "text", value: "Our Investors" },
     { section: "investors", key: "intro", label: "Investors Description", type: "textarea", value: "Meet the institutional partners, private capital allocators, and strategic agri-investors backing Ceylon Development Plantation's long-term agricultural expansion and transparent governance." },
@@ -335,7 +241,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "team", key: "members", label: "Leadership Profiles List", type: "textarea", value: "[]", isRepeater: true },
     { section: "advisors", key: "heading", label: "Agronomy Advisory Heading", type: "text", value: "Senior Agronomy Advisory Panel" },
     { section: "advisors", key: "description", label: "Agronomy Advisory Description", type: "textarea", value: "Independent university professors, soil researchers and plant pathologists guiding our field practices." },
-    { section: "governance", key: "cards", label: "Governance Framework Cards", type: "textarea", value: "[]", isRepeater: true },
   ],
 
   "life-at-cdp": [
@@ -374,17 +279,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "standards", key: "step_3_desc", label: "Standard Step 3 Description", type: "textarea", value: "Entries we can evidence go live as Verified. Anything pending is clearly marked." },
   ],
 
-  plantations: [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Our Plantations" },
-    { section: "hero", key: "title", label: "Plantations Page Title", type: "text", value: "An interactive explorer of every CDP estate" },
-    { section: "hero", key: "intro", label: "Plantations Page Intro", type: "textarea", value: "Every block mapped, every soil profile documented, every crop cycle accounted for. Real estates under active cultivation across Sri Lanka." },
-    { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "stats", key: "total_hectares", label: "Total Hectares", type: "text", value: "650+" },
-    { section: "stats", key: "active_districts", label: "Active Districts", type: "text", value: "6" },
-    { section: "stats", key: "cultivated_crops", label: "Cultivated Crops", type: "text", value: "4 Primary" },
-    { section: "stats", key: "total_estates", label: "Total Estates", type: "text", value: "8 Estates" },
-    { section: "estates", key: "items", label: "Plantation Estates Directory", type: "textarea", value: "[]", isRepeater: true },
-  ],
 
   investments: [
     { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Investment Opportunities" },
@@ -395,45 +289,11 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "assurance", key: "description", label: "Assurance Description", type: "textarea", value: "Our participation structures map to verified harvest seasons and real commodity export demand." },
   ],
 
-  "how-it-works": [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "How It Works" },
-    { section: "hero", key: "title", label: "How It Works Page Title", type: "text", value: "From first question to final harvest — no black boxes" },
-    { section: "hero", key: "intro", label: "How It Works Page Intro", type: "textarea", value: "We believe clarity builds confidence. Here is every stage of an agricultural partnership with Ceylon Development Plantation." },
-    { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "journey", key: "heading", label: "Journey Section Heading", type: "text", value: "Eight stages, documented end to end" },
-    { section: "journey", key: "description", label: "Journey Section Description", type: "textarea", value: "Each stage exists to reduce uncertainty — for you and for us." },
-    { section: "journey", key: "steps", label: "Cultivation Journey Stages List", type: "textarea", value: "[]", isRepeater: true },
-    { section: "advisory", key: "heading", label: "Advisory Desk Heading", type: "text", value: "Continuous agronomy updates & legal verification" },
-    { section: "advisory", key: "description", label: "Advisory Desk Description", type: "textarea", value: "Quarterly field progress audits, high-resolution aerial surveys and transparent financial statements dispatched directly to partners." },
-  ],
-
   calculator: [
     { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "ROI Estimator" },
     { section: "hero", key: "title", label: "Calculator Page Title", type: "text", value: "Explore scenarios — with the assumptions shown" },
-    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Adjust the project, amount and scenario to see an illustrative outcome. Every figure here is an estimate based on stated assumptions." },
+    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Select a plantation project and investment capital to see an illustrative 12-month annual outcome. Every figure here is an estimate based on stated assumptions." },
     { section: "disclaimer", key: "warning_text", label: "Statutory Disclaimer Text", type: "textarea", value: "This tool is for education only. It is not financial advice and does not account for tax, inflation, crop failure or market downturns." },
-  ],
-
-  "profit-calculator": [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Profit Calculator" },
-    { section: "hero", key: "title", label: "Profit Calculator Title", type: "text", value: "See your profits — on maturity or monthly" },
-    { section: "hero", key: "intro", label: "Profit Calculator Intro", type: "textarea", value: "Select an account type and an investment amount to see an illustration of the profits paid on maturity and the profits paid monthly." },
-    { section: "plans", key: "items", label: "Account Types & Rates Configuration", type: "textarea", value: "[]", isRepeater: true },
-    { section: "rules", key: "payout_rule", label: "Monthly Payout Rule Note", type: "textarea", value: "Profits are credited to the investor's designated bank account on the 10th of every calendar month." },
-  ],
-
-  sustainability: [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Sustainability & CSR" },
-    { section: "hero", key: "title", label: "Sustainability Page Title", type: "text", value: "Environmental management, community and climate resilience" },
-    { section: "hero", key: "intro", label: "Sustainability Page Intro", type: "textarea", value: "Agriculture cannot thrive by depleting the soil it depends on. Our sustainable practices protect both ecosystem biodiversity and farmer welfare." },
-    { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "pillars", key: "heading", label: "Pillars Section Heading", type: "text", value: "Eight pillars of responsible plantation management" },
-    { section: "pillars", key: "description", label: "Pillars Section Description", type: "textarea", value: "Every estate adheres to environmental safeguards, soil regeneration guidelines and water conservation protocols." },
-    { section: "pillars", key: "items", label: "Sustainability Pillars Cards", type: "textarea", value: "[]", isRepeater: true },
-    { section: "esg", key: "carbon_offset", label: "Carbon Offset Target", type: "text", value: "14,500 Tons CO2e" },
-    { section: "esg", key: "trees_planted", label: "Trees Planted", type: "text", value: "120,000+ Native Trees" },
-    { section: "esg", key: "farmer_families", label: "Smallholders Supported", type: "text", value: "450+ Families" },
-    { section: "esg", key: "water_recycled", label: "Irrigation Efficiency", type: "text", value: "92% Water Conservation" },
   ],
 
   insights: [
@@ -444,7 +304,7 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
   ],
 
   legal: [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Investor Relations · Legal & Compliance" },
+    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Legal & Compliance" },
     { section: "hero", key: "title", label: "Legal Page Title", type: "text", value: "Registration, compliance and how to read our disclosures" },
     { section: "hero", key: "intro", label: "Legal Page Intro", type: "textarea", value: "Trust starts with paperwork you can check. This section publishes CDP's registration details, documents and statutory disclosures." },
     { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
@@ -467,22 +327,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "departments", key: "items", label: "Department Directory", type: "textarea", value: "[]", isRepeater: true },
   ],
 
-  "investor-login": [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Investor Portal" },
-    { section: "hero", key: "title", label: "Portal Heading", type: "text", value: "Secure access to your plantation participations" },
-    { section: "hero", key: "intro", label: "Portal Subtitle", type: "textarea", value: "A dedicated space for CDP investors — kept strictly separate from the public website." },
-    { section: "notice", key: "preview_notice", label: "Demonstration Environment Notice", type: "textarea", value: "The investor portal is in preview mode. Please contact investor relations to request access, or reach us on WhatsApp." },
-    { section: "benefits", key: "items", label: "Portal Benefits List", type: "textarea", value: "[]", isRepeater: true },
-  ],
-
-  "investor-relations": [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Investor Relations" },
-    { section: "hero", key: "title", label: "Page Title", type: "text", value: "Clarity and accountability for every investor" },
-    { section: "hero", key: "intro", label: "Page Intro", type: "textarea", value: "Where CDP investors find portal access, disclosures, reporting and the people responsible for answering their questions." },
-    { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "quick_access", key: "items", label: "Quick Access Cards", type: "textarea", value: "[]", isRepeater: true },
-    { section: "commitments", key: "items", label: "Investor Commitments List", type: "textarea", value: "[]", isRepeater: true },
-  ],
 
   "my-investments": [
     { section: "hero", key: "badge", label: "Security Badge", type: "text", value: "Investor Security Portal" },

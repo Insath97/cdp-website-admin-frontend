@@ -62,6 +62,7 @@ function CMSContent() {
               // Filter out rogue/extraneous test items and obsolete repeaters
               if (it.section === "general" && it.key === "test") return;
               if (page === "awards" && it.section === "general") return;
+              if (page === "awards" && it.section === "standards") return;
               if (page === "awards" && it.section === "showcase" && it.key === "items") return;
               flatList.push(it);
             });
@@ -149,7 +150,7 @@ function CMSContent() {
     try {
       const payload = items.map((item) => {
         // If value is a JSON array/object, also populate metadata.items for backend compatibility
-        let metadata = item.metadata || {};
+        let metadata = item.metadata && typeof item.metadata === "object" ? { ...item.metadata } : {};
         try {
           if (
             typeof item.value === "string" &&
@@ -162,18 +163,21 @@ function CMSContent() {
           // Keep raw string if parsing fails
         }
 
+        const finalMetadata = Object.keys(metadata).length > 0 ? metadata : null;
+
         return {
           page: item.page,
           section: item.section,
           key: item.key,
-          value: item.value,
+          value: item.value ?? "",
           type: item.type,
           label: item.label,
-          metadata,
+          metadata: finalMetadata,
         };
       });
 
       await cmsService.updateBulk(payload, fileMap);
+      setFileMap({});
       toast("CMS contents updated successfully!", "success");
       fetchPageContent(selectedPage);
     } catch (err: any) {

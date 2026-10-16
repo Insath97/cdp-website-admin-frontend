@@ -48,6 +48,21 @@ export const cmsService = {
     // If files are attached, send as multipart FormData
     if (files && Object.keys(files).length > 0) {
       const formData = new FormData();
+
+      const appendFormData = (prefix: string, value: any) => {
+        if (value === null || value === undefined) return;
+        if (value instanceof File || value instanceof Blob) {
+          formData.append(prefix, value);
+        } else if (Array.isArray(value)) {
+          value.forEach((v, i) => appendFormData(`${prefix}[${i}]`, v));
+        } else if (typeof value === "object") {
+          const keys = Object.keys(value);
+          keys.forEach((k) => appendFormData(`${prefix}[${k}]`, value[k]));
+        } else {
+          formData.append(prefix, String(value));
+        }
+      };
+
       items.forEach((item, index) => {
         formData.append(`contents[${index}][page]`, item.page);
         formData.append(`contents[${index}][section]`, item.section);
@@ -56,8 +71,11 @@ export const cmsService = {
         if (item.label) {
           formData.append(`contents[${index}][label]`, item.label);
         }
-        if (item.metadata) {
-          formData.append(`contents[${index}][metadata]`, JSON.stringify(item.metadata));
+        if (item.metadata && typeof item.metadata === "object") {
+          const metaKeys = Object.keys(item.metadata);
+          if (metaKeys.length > 0) {
+            appendFormData(`contents[${index}][metadata]`, item.metadata);
+          }
         }
 
         if (files[index]) {
