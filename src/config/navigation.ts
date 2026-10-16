@@ -19,6 +19,7 @@ import {
   Trophy,
   UserCheck,
   MessageSquareQuote,
+  Landmark,
 } from "lucide-react";
 
 export interface NavItem {
@@ -58,6 +59,12 @@ export const navigation: NavGroup[] = [
         label: "Leadership",
         href: "/leadership",
         icon: UserCheck,
+        permission: "CMS Index",
+      },
+      {
+        label: "Our Investors",
+        href: "/investors",
+        icon: Landmark,
         permission: "CMS Index",
       },
       {

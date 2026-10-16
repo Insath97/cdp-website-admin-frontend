@@ -19,7 +19,12 @@ export { awardTypeService } from "./award-type.service";
 export { awardService } from "./award.service";
 export { leadershipService } from "./leadership.service";
 export { testimonialService } from "./testimonial.service";
+export { investorsService } from "./investors.service";
 
+export type {
+  InvestorMember,
+  InvestorCategory,
+} from "./investors.service";
 export type {
   LeadershipMember,
   LeadershipCategory,

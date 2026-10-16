@@ -91,6 +91,14 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "status", label: "Status", type: "text", placeholder: "Ongoing / Verified" },
   ],
 
+  // Our Investors List
+  "about.investors.list": [
+    { key: "name", label: "Investor Name", type: "text", placeholder: "e.g. Deshabandu Mohan Jayasuriya" },
+    { key: "role", label: "Title / Role", type: "text", placeholder: "e.g. Lead Institutional Capital Partner" },
+    { key: "company", label: "Organization / Fund", type: "text", placeholder: "e.g. Ceylon Agro-Infrastructure Growth Fund" },
+    { key: "image", label: "Portrait Photo URL", type: "image", placeholder: "https://... or upload" },
+  ],
+
   // Leadership Team
   "leadership.team.members": [
     { key: "name", label: "Full Name", type: "text", placeholder: "e.g. Dr. Ananda Weerasinghe" },
@@ -301,6 +309,10 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "operations", key: "regions", label: "Regional Operating Footprint", type: "textarea", value: "[]", isRepeater: true },
     { section: "timeline", key: "milestones", label: "Corporate Timeline Milestones", type: "textarea", value: "[]", isRepeater: true },
     { section: "partnerships", key: "items", label: "Strategic Partnerships", type: "textarea", value: "[]", isRepeater: true },
+    { section: "investors", key: "eyebrow", label: "Investors Eyebrow", type: "text", value: "Capital Partners & Alliances" },
+    { section: "investors", key: "title", label: "Investors Heading", type: "text", value: "Our Investors" },
+    { section: "investors", key: "intro", label: "Investors Description", type: "textarea", value: "Meet the institutional partners, private capital allocators, and strategic agri-investors backing Ceylon Development Plantation's long-term agricultural expansion and transparent governance." },
+    { section: "investors", key: "list", label: "Our Investors List", type: "textarea", value: "[]", isRepeater: true },
     { section: "chairman", key: "message_title", label: "Chairman Message Heading", type: "text", value: "Letter from the Chairman" },
     { section: "chairman", key: "quote", label: "Chairman Core Quote", type: "textarea", value: "We will always show you the whole picture — not just the promising part of it." },
     { section: "chairman", key: "paragraph_1", label: "Chairman Message Paragraph 1", type: "textarea", value: "At Ceylon Development Plantation, we believe Sri Lankan agriculture deserves the same discipline, transparency and long-term thinking as any serious industry. Our land has fed this nation for generations; our task is to steward it with modern agronomy, honest reporting and genuine respect for the people who work it." },
