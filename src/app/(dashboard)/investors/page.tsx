@@ -25,6 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 export const DEFAULT_INVESTOR_PLACEHOLDER_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80";
@@ -50,6 +51,7 @@ export default function InvestorsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingInvestor, setEditingInvestor] = useState<InvestorMember | null>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [uploadedPhotoFile, setUploadedPhotoFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     name: "",
     role: "",
@@ -111,6 +113,7 @@ export default function InvestorsPage() {
   // Open Create Modal
   const handleOpenCreate = () => {
     setEditingInvestor(null);
+    setUploadedPhotoFile(null);
     setForm({
       name: "",
       role: "",
@@ -125,6 +128,7 @@ export default function InvestorsPage() {
   // Open Edit Modal
   const handleOpenEdit = (inv: InvestorMember) => {
     setEditingInvestor(inv);
+    setUploadedPhotoFile(null);
     setForm({
       name: inv.name,
       role: inv.role,
@@ -150,6 +154,8 @@ export default function InvestorsPage() {
       toast("Image size should be less than 5MB", "error");
       return;
     }
+
+    setUploadedPhotoFile(file);
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -178,8 +184,10 @@ export default function InvestorsPage() {
     setSaving(true);
     try {
       let updatedList: InvestorMember[];
+      let targetId: string;
 
       if (editingInvestor) {
+        targetId = editingInvestor.id;
         updatedList = investors.map((item) =>
           item.id === editingInvestor.id
             ? {
@@ -195,8 +203,9 @@ export default function InvestorsPage() {
         );
         toast("Investor updated successfully", "success");
       } else {
+        targetId = `inv-${Date.now()}`;
         const newInvestor: InvestorMember = {
-          id: `inv-${Date.now()}`,
+          id: targetId,
           name: form.name.trim(),
           role: form.role.trim(),
           company: form.company.trim() || undefined,
@@ -211,8 +220,13 @@ export default function InvestorsPage() {
       }
 
       setInvestors(updatedList);
-      await investorsService.saveInvestors(updatedList);
+      const filesMap: Record<string, File> = {};
+      if (uploadedPhotoFile) {
+        filesMap[targetId] = uploadedPhotoFile;
+      }
+      await investorsService.saveInvestors(updatedList, filesMap);
       setModalOpen(false);
+      setUploadedPhotoFile(null);
     } catch (err) {
       console.error("Failed to save investor:", err);
       toast("Failed to save investor", "error");
@@ -225,6 +239,10 @@ export default function InvestorsPage() {
   const handleToggleStatus = async (inv: InvestorMember) => {
     try {
       const nextStatus = !inv.is_active;
+      const isNumeric = /^\d+$/.test(String(inv.id));
+      if (isNumeric) {
+        investorsService.toggleStatus(inv.id).catch(() => {});
+      }
       const updatedList = investors.map((item) =>
         item.id === inv.id
           ? { ...item, is_active: nextStatus, updated_at: new Date().toISOString() }
@@ -258,6 +276,10 @@ export default function InvestorsPage() {
     if (!targetDeleteInvestor) return;
     setDeleting(true);
     try {
+      const isNumeric = /^\d+$/.test(String(targetDeleteInvestor.id));
+      if (isNumeric) {
+        await investorsService.deleteInvestor(targetDeleteInvestor.id).catch(() => {});
+      }
       const updatedList = investors.filter((item) => item.id !== targetDeleteInvestor.id);
       setInvestors(updatedList);
       await investorsService.saveInvestors(updatedList);
@@ -273,7 +295,8 @@ export default function InvestorsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PermissionGuard permission="Investor Index">
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -871,5 +894,6 @@ export default function InvestorsPage() {
         }}
       />
     </div>
-  );
+  </PermissionGuard>
+);
 }

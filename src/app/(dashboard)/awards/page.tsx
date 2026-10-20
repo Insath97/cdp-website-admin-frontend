@@ -613,7 +613,8 @@ export default function UnifiedAwardsPage() {
     activeGalleryPhotos[galleryIndex] || activeGalleryPhotos[0];
 
   return (
-    <div className="space-y-6">
+    <PermissionGuard permission="Award Index">
+      <div className="space-y-6">
       {/* Page Header matching standard admin modules (clean typography, no icons in H1) */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -1800,5 +1801,6 @@ export default function UnifiedAwardsPage() {
         danger={true}
       />
     </div>
-  );
+  </PermissionGuard>
+);
 }

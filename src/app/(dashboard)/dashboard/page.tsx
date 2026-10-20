@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import apiClient from "@/lib/api-client";
 import { useAuthStore } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import type { ActivityLog } from "@/types";
 
 interface DashboardStats {
@@ -186,7 +187,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <PermissionGuard permission="Dashboard Index">
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -489,5 +491,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  );
+  </PermissionGuard>
+);
 }

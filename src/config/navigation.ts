@@ -59,13 +59,13 @@ export const navigation: NavGroup[] = [
         label: "Leadership",
         href: "/leadership",
         icon: UserCheck,
-        permission: "CMS Index",
+        permission: "Leadership Index",
       },
       {
         label: "Our Investors",
         href: "/investors",
         icon: Landmark,
-        permission: "CMS Index",
+        permission: "Investor Index",
       },
       {
         label: "FAQs",

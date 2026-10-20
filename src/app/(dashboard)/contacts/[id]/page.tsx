@@ -315,7 +315,7 @@ function ViewContactContent({ contactId }: { contactId: string }) {
 export default function ViewContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (
-    <PermissionGuard permission="Contact Index">
+    <PermissionGuard permission="Contact Show">
       <ViewContactContent contactId={id} />
     </PermissionGuard>
   );

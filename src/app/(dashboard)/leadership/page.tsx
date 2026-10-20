@@ -423,7 +423,7 @@ export default function LeadershipPage() {
   const totalVisible = members.filter((m) => m.is_active !== false).length;
 
   return (
-    <PermissionGuard permission="CMS Index">
+    <PermissionGuard permission="Leadership Index">
       <div className="space-y-6">
         {/* Header matching CMS UI flow */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
