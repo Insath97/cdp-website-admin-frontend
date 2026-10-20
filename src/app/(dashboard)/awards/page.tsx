@@ -348,7 +348,15 @@ export default function UnifiedAwardsPage() {
     }
   };
 
-  const removeExistingGallery = (id: number) => {
+  const removeExistingGallery = async (id: number) => {
+    if (editingAward) {
+      try {
+        await awardService.deleteGalleryImage(editingAward.id, id);
+        toast("Gallery photograph removed from award", "success");
+      } catch {
+        // Fallback: will be cleaned up on save
+      }
+    }
     setExistingGalleries((prev) => prev.filter((g) => g.id !== id));
     setDeletedGalleryIds((prev) => [...prev, id]);
   };
@@ -398,16 +406,36 @@ export default function UnifiedAwardsPage() {
         formData.append("thumbnail_image", thumbnailFile);
       }
 
-      if (newGalleryFiles.length > 0) {
-        newGalleryFiles.forEach((file) => {
-          formData.append("galleries[]", file);
-        });
-      }
-
       if (editingAward) {
+        // 1. Purge any remaining marked deleted gallery images via dedicated endpoint
+        if (deletedGalleryIds.length > 0) {
+          await Promise.allSettled(
+            deletedGalleryIds.map((galId) =>
+              awardService.deleteGalleryImage(editingAward.id, galId)
+            )
+          );
+        }
+
+        // 2. Upload any newly added stage gallery files via dedicated uploadGalleries endpoint
+        if (newGalleryFiles.length > 0) {
+          try {
+            await awardService.uploadGalleries(editingAward.id, newGalleryFiles);
+          } catch {
+            // Fallback: include in main form if standalone endpoint failed
+            newGalleryFiles.forEach((file) => {
+              formData.append("galleries[]", file);
+            });
+          }
+        }
+
         await awardService.update(editingAward.id, formData);
         toast("Award updated successfully", "success");
       } else {
+        if (newGalleryFiles.length > 0) {
+          newGalleryFiles.forEach((file) => {
+            formData.append("galleries[]", file);
+          });
+        }
         await awardService.create(formData);
         toast("Award created successfully", "success");
       }

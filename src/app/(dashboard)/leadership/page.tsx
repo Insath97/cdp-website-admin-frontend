@@ -101,6 +101,7 @@ export default function LeadershipPage() {
   const [editingMember, setEditingMember] = useState<LeadershipMember | null>(null);
   const [formTab, setFormTab] = useState<"basic" | "qualifications" | "editorial">("basic");
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [uploadedPhotoFile, setUploadedPhotoFile] = useState<File | null>(null);
   const [form, setForm] = useState<{
     name: string;
     role: string;
@@ -153,10 +154,10 @@ export default function LeadershipPage() {
   }, [toast]);
 
   // Save all changes to CMS & LocalStorage
-  const handleSaveAllChanges = async (membersToSave = members) => {
+  const handleSaveAllChanges = async (membersToSave = members, filesMap?: Record<string, File>) => {
     setSaving(true);
     try {
-      await leadershipService.saveMembers(membersToSave);
+      await leadershipService.saveMembers(membersToSave, filesMap);
       setHasUnsavedChanges(false);
       toast("Leadership directory updated successfully!", "success");
     } catch (err) {
@@ -176,7 +177,14 @@ export default function LeadershipPage() {
   };
 
   // Toggle active/hidden visibility
-  const handleToggleStatus = (member: LeadershipMember) => {
+  const handleToggleStatus = async (member: LeadershipMember) => {
+    if (/^\d+$/.test(String(member.id))) {
+      try {
+        await leadershipService.toggleStatus(member.id);
+      } catch (err) {
+        console.warn("Toggle status API notice:", err);
+      }
+    }
     const updated = members.map((m) =>
       m.id === member.id ? { ...m, is_active: !m.is_active } : m
     );
@@ -245,6 +253,7 @@ export default function LeadershipPage() {
     setEditingMember(null);
     setFormTab("basic");
     setShowUrlInput(false);
+    setUploadedPhotoFile(null);
     setForm({
       name: "",
       role: "",
@@ -268,6 +277,7 @@ export default function LeadershipPage() {
     setEditingMember(member);
     setFormTab("basic");
     setShowUrlInput(false);
+    setUploadedPhotoFile(null);
     setForm({
       name: member.name,
       role: member.role,
@@ -295,6 +305,8 @@ export default function LeadershipPage() {
       toast("Please select a valid image file (PNG, JPG, WebP).", "error");
       return;
     }
+
+    setUploadedPhotoFile(file);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -330,7 +342,10 @@ export default function LeadershipPage() {
     }
 
     let updated: LeadershipMember[];
+    let targetMemberId: string;
+
     if (editingMember) {
+      targetMemberId = String(editingMember.id);
       updated = members.map((m) =>
         m.id === editingMember.id
           ? {
@@ -343,8 +358,9 @@ export default function LeadershipPage() {
       );
       toast(`Updated profile for ${form.name}.`, "success");
     } else {
+      targetMemberId = `leader-${Date.now()}`;
       const newPerson: LeadershipMember = {
-        id: `leader-${Date.now()}`,
+        id: targetMemberId,
         ...form,
         image: finalImage,
         created_at: new Date().toISOString(),
@@ -354,9 +370,11 @@ export default function LeadershipPage() {
       toast(`Added ${form.name} to the leadership directory.`, "success");
     }
 
+    const filesMap = uploadedPhotoFile ? { [targetMemberId]: uploadedPhotoFile } : undefined;
+
     setMembers(updated);
     setHasUnsavedChanges(true);
-    handleSaveAllChanges(updated);
+    handleSaveAllChanges(updated, filesMap);
     setModalOpen(false);
   };
 
@@ -366,8 +384,15 @@ export default function LeadershipPage() {
     setDeleteConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deletingMember) return;
+    if (/^\d+$/.test(String(deletingMember.id))) {
+      try {
+        await leadershipService.deleteMember(deletingMember.id);
+      } catch (err) {
+        console.warn("Delete member API notice:", err);
+      }
+    }
     const updated = members.filter((m) => m.id !== deletingMember.id);
     setMembers(updated);
     setHasUnsavedChanges(true);

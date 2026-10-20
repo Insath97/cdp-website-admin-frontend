@@ -168,6 +168,31 @@ export const awardService = {
     const response = await apiClient.patch(`/awards/${id}/toggle-status`);
     return response.data.data || response.data;
   },
+
+  /**
+   * Dedicated standalone gallery endpoints
+   */
+  uploadGalleries: async (awardId: number, files: File[]): Promise<{ uploaded_count: number; galleries: AwardGallery[]; award: Award }> => {
+    const fd = new FormData();
+    files.forEach((file) => fd.append("galleries[]", file));
+    const response = await apiClient.post(`/awards/${awardId}/galleries`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data.data || response.data;
+  },
+
+  updateGalleryImage: async (awardId: number, galleryId: number, file: File): Promise<AwardGallery> => {
+    const fd = new FormData();
+    fd.append("image", file);
+    const response = await apiClient.post(`/awards/${awardId}/galleries/${galleryId}`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data.data || response.data;
+  },
+
+  deleteGalleryImage: async (awardId: number, galleryId: number): Promise<void> => {
+    await apiClient.delete(`/awards/${awardId}/galleries/${galleryId}`);
+  },
 };
 
 export default awardService;
