@@ -64,6 +64,7 @@ function CMSContent() {
               if (page === "awards" && it.section === "general") return;
               if (page === "awards" && it.section === "standards") return;
               if (page === "awards" && it.section === "showcase" && it.key === "items") return;
+              if (page === "investments" && it.section === "assurance") return;
               flatList.push(it);
             });
           }
@@ -492,23 +493,31 @@ function CMSContent() {
                               item.type === "file" ||
                               item.type === "pdf" ? (
                               <div className="space-y-2">
-                                {item.value && (
-                                  <div className="flex items-center gap-3 rounded-lg border border-border p-2 dark:border-gray-700">
-                                    {item.type === "image" &&
-                                    item.value.startsWith("http") ? (
-                                      <img
-                                        src={item.value}
-                                        alt="preview"
-                                        className="h-10 w-10 shrink-0 rounded object-cover border border-border"
-                                      />
-                                    ) : (
-                                      <ImageIcon className="h-5 w-5 text-primary shrink-0" />
-                                    )}
-                                    <span className="truncate text-xs text-text-primary dark:text-gray-300 flex-1">
-                                      {item.value}
-                                    </span>
-                                  </div>
-                                )}
+                                {(() => {
+                                  const selectedFile = fileMap[originalIndex];
+                                  const previewUrl = selectedFile
+                                    ? URL.createObjectURL(selectedFile)
+                                    : item.value && (item.value.startsWith("http") || item.value.startsWith("/"))
+                                    ? `${item.value}${item.value.includes("?") ? "&" : "?"}v=${item.updated_at || ""}`
+                                    : null;
+
+                                  return item.value ? (
+                                    <div className="flex items-center gap-3 rounded-lg border border-border p-2 dark:border-gray-700">
+                                      {item.type === "image" && previewUrl ? (
+                                        <img
+                                          src={previewUrl}
+                                          alt="preview"
+                                          className="h-10 w-10 shrink-0 rounded object-cover border border-border"
+                                        />
+                                      ) : (
+                                        <ImageIcon className="h-5 w-5 text-primary shrink-0" />
+                                      )}
+                                      <span className="truncate text-xs text-text-primary dark:text-gray-300 flex-1">
+                                        {item.value}
+                                      </span>
+                                    </div>
+                                  ) : null;
+                                })()}
                                 <div className="flex items-center gap-2">
                                   <input
                                     type="text"

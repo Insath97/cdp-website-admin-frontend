@@ -93,49 +93,6 @@ export function mapInvestorMemberToFormData(member: InvestorMember, photoFile?: 
   return fd;
 }
 
-export const defaultInvestors: InvestorMember[] = [
-  {
-    id: "inv-manjula-senaratne",
-    name: "Dr. Manjula Senaratne",
-    role: "Strategic Ag-Tech Venture Partner",
-    company: "Serendib Agri-Ventures & Seed Capital",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80",
-    is_active: true,
-    order: 1,
-  },
-  {
-    id: "inv-mohan-jayasuriya",
-    name: "Deshabandu Mohan Jayasuriya",
-    role: "Lead Institutional Capital Partner",
-    company: "Ceylon Agro-Infrastructure Growth Fund",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80",
-    is_active: true,
-    order: 2,
-  },
-  {
-    id: "inv-ranjit-aluwihare",
-    name: "Ranjit Aluwihare",
-    role: "Founding Consortium Partner",
-    company: "Heritage Plantation Equity Syndicate",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=80",
-    is_active: true,
-    order: 3,
-  },
-  {
-    id: "inv-kavindi-dharmapala",
-    name: "Kavindi Dharmapala",
-    role: "Impact & Sustainable Capital Lead",
-    company: "South Asia Green Horizon Fund",
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80",
-    is_active: true,
-    order: 4,
-  },
-];
-
 const LOCAL_STORAGE_KEY = "cdp_investors_list";
 
 export const investorsService = {
@@ -205,83 +162,8 @@ export const investorsService = {
    * 4. Bundled defaults
    */
   getInvestors: async (): Promise<InvestorMember[]> => {
-    // 1. Try dedicated backend endpoint
-    try {
-      const apiInvestors = await investorsService.fetchApiInvestors({ per_page: 100 });
-      if (apiInvestors && apiInvestors.length > 0) {
-        const mapped = apiInvestors.map(mapApiToInvestorMember);
-        if (typeof window !== "undefined") {
-          try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mapped));
-          } catch {
-            // ignore
-          }
-        }
-        return mapped;
-      }
-    } catch (apiErr) {
-      // Gracefully fall back if relational table is pending/unseeded in dev
-    }
-
-    // 2. Check local storage first for fast responsiveness
-    let localData: InvestorMember[] | null = null;
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            localData = parsed;
-          }
-        }
-      } catch {
-        // Ignore local parse error
-      }
-    }
-
-    // 3. Fetch from CMS API
-    try {
-      const cmsGroup = await cmsService.getAll("about");
-      const listArray = cmsGroup?.investors?.list;
-      const investorField = Array.isArray(listArray) && listArray.length > 0 ? listArray[0] : null;
-      if (investorField) {
-        if (investorField.metadata?.items && Array.isArray(investorField.metadata.items)) {
-          const items = investorField.metadata.items as InvestorMember[];
-          if (items.length > 0) {
-            if (typeof window !== "undefined") {
-              try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(items));
-              } catch {
-                // ignore
-              }
-            }
-            return items;
-          }
-        }
-
-        if (typeof investorField.value === "string" && investorField.value.trim().startsWith("[")) {
-          const parsed = JSON.parse(investorField.value);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            if (typeof window !== "undefined") {
-              try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
-              } catch {
-                // ignore
-              }
-            }
-            return parsed as InvestorMember[];
-          }
-        }
-      }
-    } catch {
-      // In case CMS API is unavailable or empty, fall back to local or defaults
-    }
-
-    if (localData && localData.length > 0) {
-      return localData;
-    }
-
-    return defaultInvestors;
+    const apiInvestors = await investorsService.fetchApiInvestors({ per_page: 100 });
+    return (apiInvestors || []).map(mapApiToInvestorMember);
   },
 
   /**

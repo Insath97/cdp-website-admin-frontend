@@ -283,10 +283,14 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
   investments: [
     { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Investment Opportunities" },
     { section: "hero", key: "title", label: "Investments Page Title", type: "text", value: "Transparent plantation structures, explained in full" },
-    { section: "hero", key: "intro", label: "Investments Page Intro", type: "textarea", value: "Every opportunity has its own structured documentation: tenure, harvest assumptions, fees, operational risks and legal exit mechanisms." },
+    { section: "hero", key: "intro", label: "Investments Page Intro", type: "textarea", value: "Every opportunity has its own structured documentation: plantation overview, crop focus, location and legal framework." },
     { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "assurance", key: "heading", label: "Assurance Heading", type: "text", value: "Agricultural participation horizons" },
-    { section: "assurance", key: "description", label: "Assurance Description", type: "textarea", value: "Our participation structures map to verified harvest seasons and real commodity export demand." },
+    { section: "projects", key: "eyebrow", label: "Projects Eyebrow Badge", type: "text", value: "Open & Upcoming" },
+    { section: "projects", key: "title", label: "Projects Section Title", type: "text", value: "Explore each opportunity in detail" },
+    { section: "projects", key: "intro", label: "Projects Section Description", type: "textarea", value: "Each project page is designed to be read end-to-end before you speak to an advisor." },
+    { section: "cta", key: "eyebrow", label: "CTA Eyebrow Badge", type: "text", value: "Next Step" },
+    { section: "cta", key: "title", label: "CTA Section Title", type: "text", value: "Not sure which structure fits? Talk it through first." },
+    { section: "cta", key: "description", label: "CTA Section Description", type: "textarea", value: "Our advisors will explain the differences, walk you through documentation and be explicit about the risks — no obligation." },
   ],
 
   calculator: [

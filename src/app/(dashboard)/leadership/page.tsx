@@ -145,7 +145,8 @@ export default function LeadershipPage() {
         setMembers(data);
       } catch (err) {
         console.error("Failed to load leadership data:", err);
-        toast("Failed to load leadership directory. Using fallback data.", "error");
+        setMembers([]);
+        toast("Failed to load leadership directory from server.", "error");
       } finally {
         setLoading(false);
       }

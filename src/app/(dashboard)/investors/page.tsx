@@ -27,9 +27,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 
-export const DEFAULT_INVESTOR_PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80";
-
 export default function InvestorsPage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -118,7 +115,7 @@ export default function InvestorsPage() {
       name: "",
       role: "",
       company: "",
-      image: DEFAULT_INVESTOR_PLACEHOLDER_IMAGE,
+      image: "",
       is_active: true,
     });
     setShowUrlInput(false);
@@ -133,7 +130,7 @@ export default function InvestorsPage() {
       name: inv.name,
       role: inv.role,
       company: inv.company || "",
-      image: inv.image || DEFAULT_INVESTOR_PLACEHOLDER_IMAGE,
+      image: inv.image || "",
       is_active: inv.is_active,
     });
     setShowUrlInput(false);
@@ -195,7 +192,7 @@ export default function InvestorsPage() {
                 name: form.name.trim(),
                 role: form.role.trim(),
                 company: form.company.trim() || undefined,
-                image: form.image || DEFAULT_INVESTOR_PLACEHOLDER_IMAGE,
+                image: form.image || "",
                 is_active: form.is_active,
                 updated_at: new Date().toISOString(),
               }
@@ -209,7 +206,7 @@ export default function InvestorsPage() {
           name: form.name.trim(),
           role: form.role.trim(),
           company: form.company.trim() || undefined,
-          image: form.image || DEFAULT_INVESTOR_PLACEHOLDER_IMAGE,
+          image: form.image || "",
           is_active: form.is_active,
           order: investors.length + 1,
           created_at: new Date().toISOString(),
@@ -427,7 +424,7 @@ export default function InvestorsPage() {
                               alt={inv.name}
                               className="h-full w-full object-cover object-top"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = DEFAULT_INVESTOR_PLACEHOLDER_IMAGE;
+                                (e.target as HTMLImageElement).style.display = "none";
                               }}
                             />
                           ) : (
@@ -578,16 +575,21 @@ export default function InvestorsPage() {
               className="rounded-xl border border-border bg-surface p-5 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between dark:border-gray-700 dark:bg-gray-800"
             >
               <div>
-                {/* Photo & Status */}
-                <div className="relative aspect-[4/5] w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 mb-3 border border-border dark:border-gray-700">
-                  <img
-                    src={inv.image || DEFAULT_INVESTOR_PLACEHOLDER_IMAGE}
-                    alt={inv.name}
-                    className="h-full w-full object-cover object-top"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = DEFAULT_INVESTOR_PLACEHOLDER_IMAGE;
-                    }}
-                  />
+                <div className="relative aspect-[4/5] w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 mb-3 border border-border dark:border-gray-700 flex items-center justify-center">
+                  {inv.image ? (
+                    <img
+                      src={inv.image}
+                      alt={inv.name}
+                      className="h-full w-full object-cover object-top"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-text-muted">
+                      <Building className="h-10 w-10 opacity-30" />
+                    </div>
+                  )}
                   <span
                     className={`absolute top-2.5 right-2.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold backdrop-blur-xs ${
                       inv.is_active
@@ -775,7 +777,7 @@ export default function InvestorsPage() {
                         alt="Preview"
                         className="h-full w-full object-cover object-top"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = DEFAULT_INVESTOR_PLACEHOLDER_IMAGE;
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
                     ) : (
@@ -815,9 +817,10 @@ export default function InvestorsPage() {
                         {form.image && (
                           <button
                             type="button"
-                            onClick={() =>
-                              setForm({ ...form, image: DEFAULT_INVESTOR_PLACEHOLDER_IMAGE })
-                            }
+                            onClick={() => {
+                              setForm({ ...form, image: "" });
+                              setUploadedPhotoFile(null);
+                            }}
                             className="text-xs text-text-muted hover:text-red-500 transition-colors"
                           >
                             Reset
