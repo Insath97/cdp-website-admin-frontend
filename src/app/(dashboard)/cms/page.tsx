@@ -65,6 +65,7 @@ function CMSContent() {
               if (page === "awards" && it.section === "standards") return;
               if (page === "awards" && it.section === "showcase" && it.key === "items") return;
               if (page === "investments" && it.section === "assurance") return;
+              if (page === "contact" && it.section === "departments") return;
               flatList.push(it);
             });
           }

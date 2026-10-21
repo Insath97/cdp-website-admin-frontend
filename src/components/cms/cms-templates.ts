@@ -136,13 +136,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-file-paper-2-line" },
   ],
 
-  // Contact Department Inquiries
-  "contact.departments.items": [
-    { key: "department", label: "Department Name", type: "text", placeholder: "e.g. Agronomy & Plantation Management" },
-    { key: "email", label: "Email Address", type: "text", placeholder: "agronomy@cdp.lk" },
-    { key: "phone", label: "Phone Hotline", type: "text", placeholder: "+94 11 234 5678" },
-    { key: "hours", label: "Operating Hours", type: "text", placeholder: "Mon – Fri: 8:30 AM – 5:00 PM" },
-  ],
 
   // Branch & Warehouse Locations Explorer
   "home.branch_preview.locations": [
@@ -328,7 +321,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "headquarters", key: "phone", label: "Headquarters Phone", type: "text", value: "+94 11 234 5678" },
     { section: "headquarters", key: "email", label: "Headquarters Email", type: "text", value: "info@cdp.lk" },
     { section: "headquarters", key: "hours", label: "Operating Hours", type: "text", value: "Monday – Friday: 8:30 AM – 5:00 PM" },
-    { section: "departments", key: "items", label: "Department Directory", type: "textarea", value: "[]", isRepeater: true },
   ],
 
 
