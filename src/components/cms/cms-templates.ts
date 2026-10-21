@@ -72,11 +72,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "status", label: "Status Badge", type: "text", placeholder: "Verified / Completed" },
   ],
 
-  // Operations Footprint
-  "about.operations.regions": [
-    { key: "region", label: "District / Region", type: "text", placeholder: "e.g. Anuradhapura" },
-    { key: "focus", label: "Agricultural Focus", type: "text", placeholder: "e.g. Paddy — flagship estate" },
-  ],
 
 
   // Our Investors List
@@ -206,7 +201,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "overview", key: "philosophy", label: "Philosophy", type: "textarea", value: "Long-term agronomic health over short-term exploitation. Transparent documentation over unverified promises." },
     { section: "history", key: "founding_title", label: "Origin Story Title", type: "text", value: "Built on agriculture, governed like a serious company" },
     { section: "history", key: "founding_text", label: "Origin Story Text", type: "textarea", value: "CDP was founded to bring professional management and modern agronomy to Sri Lankan plantation agriculture." },
-    { section: "operations", key: "regions", label: "Regional Operating Footprint", type: "textarea", value: "[]", isRepeater: true },
     { section: "timeline", key: "milestones", label: "Corporate Timeline Milestones", type: "textarea", value: "[]", isRepeater: true },
     { section: "investors", key: "eyebrow", label: "Investors Eyebrow", type: "text", value: "Capital Partners & Alliances" },
     { section: "investors", key: "title", label: "Investors Heading", type: "text", value: "Our Investors" },
