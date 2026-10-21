@@ -287,10 +287,12 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
   ],
 
   calculator: [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "ROI Estimator" },
+    { section: "hero", key: "eyebrow", label: "Calculator Page Eyebrow", type: "text", value: "ROI Estimator" },
     { section: "hero", key: "title", label: "Calculator Page Title", type: "text", value: "Explore scenarios — with the assumptions shown" },
-    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Select a plantation project and investment capital to see an illustrative 12-month annual outcome. Every figure here is an estimate based on stated assumptions." },
-    { section: "disclaimer", key: "warning_text", label: "Statutory Disclaimer Text", type: "textarea", value: "This tool is for education only. It is not financial advice and does not account for tax, inflation, crop failure or market downturns." },
+    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Select a Investment Plan and investment capital to see an illustrative outcome. Every figure here is an estimate based on stated assumptions — never a guarantee, forecast or promise of return." },
+    { section: "home_section", key: "eyebrow", label: "Home Section Eyebrow", type: "text", value: "Interactive ROI Estimator" },
+    { section: "home_section", key: "title", label: "Home Section Heading", type: "text", value: "Estimate Your Harvest Returns" },
+    { section: "home_section", key: "intro", label: "Home Section Description", type: "textarea", value: "Select a project and enter your capital to view projected returns based on real agricultural cycles." },
   ],
 
   insights: [
