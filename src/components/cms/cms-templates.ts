@@ -132,10 +132,9 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
   ],
 
 
-  // Branch & Warehouse Locations Explorer
+  // Branch Locations Explorer
   "home.branch_preview.locations": [
-    { key: "name", label: "Facility Name", type: "text", placeholder: "e.g. Colombo Head Office" },
-    { key: "type", label: "Type (branch or warehouse)", type: "text", placeholder: "branch" },
+    { key: "name", label: "Branch Name", type: "text", placeholder: "e.g. Colombo Head Office" },
     { key: "categoryLabel", label: "Category Label", type: "text", placeholder: "Branch Office" },
     { key: "district", label: "District", type: "text", placeholder: "Colombo" },
     { key: "city", label: "City", type: "text", placeholder: "Colombo 03" },
@@ -145,6 +144,7 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "hours", label: "Operating Hours", type: "text", placeholder: "Mon – Fri: 8:30 AM – 5:00 PM" },
     { key: "lat", label: "Latitude", type: "text", placeholder: "6.9271" },
     { key: "lng", label: "Longitude", type: "text", placeholder: "79.8612" },
+    { key: "map_url", label: "Google Maps Directions / Navigation URL (optional)", type: "text", placeholder: "https://www.google.com/maps/dir/?api=1&destination=..." },
   ],
 };
 
@@ -172,9 +172,10 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "testimonials", key: "description", label: "Testimonials Section Description", type: "textarea", value: "Perspectives from across the CDP estate network — on transparency, documentation and agricultural discipline." },
     { section: "testimonials", key: "items", label: "Testimonial Cards Collection", type: "textarea", value: "[]", isRepeater: true },
     { section: "branch_preview", key: "eyebrow", label: "Branch Locator Eyebrow", type: "text", value: "Island-Wide Network" },
-    { section: "branch_preview", key: "heading", label: "Branch Locator Heading", type: "text", value: "Find a Branch or Warehouse Near You" },
-    { section: "branch_preview", key: "description", label: "Branch Locator Description", type: "textarea", value: "With operational branches and central agricultural warehouses across Sri Lanka, our agronomy teams are on the ground." },
-    { section: "branch_preview", key: "locations", label: "Custom Branch / Warehouse Locations List", type: "textarea", value: "[]", isRepeater: true },
+    { section: "branch_preview", key: "heading", label: "Branch Locator Heading", type: "text", value: "Find a Branch Near You" },
+    { section: "branch_preview", key: "description", label: "Branch Locator Description", type: "textarea", value: "With operational branches across Sri Lanka, our agronomy and investor advisory teams are on the ground. Select your location or search below." },
+    { section: "branch_preview", key: "button_text", label: "Branch Card Directions Button Text", type: "text", value: "Directions" },
+    { section: "branch_preview", key: "locations", label: "Custom Branch Locations List", type: "textarea", value: "[]", isRepeater: true },
     { section: "insights_preview", key: "eyebrow", label: "Insights Eyebrow", type: "text", value: "Field Notes & Intelligence" },
     { section: "insights_preview", key: "heading", label: "Insights Section Heading", type: "text", value: "Agricultural insights, education and company updates" },
     { section: "insights_preview", key: "description", label: "Insights Section Description", type: "textarea", value: "Agronomy briefings, harvest reports and macroeconomic analyses from the field." },
