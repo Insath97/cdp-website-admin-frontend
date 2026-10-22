@@ -131,21 +131,6 @@ export const REPEATER_SCHEMAS: Record<string, RepeaterFieldSchema[]> = {
     { key: "icon", label: "Icon Class", type: "text", placeholder: "e.g. ri-file-paper-2-line" },
   ],
 
-
-  // Branch Locations Explorer
-  "home.branch_preview.locations": [
-    { key: "name", label: "Branch Name", type: "text", placeholder: "e.g. Colombo Head Office" },
-    { key: "categoryLabel", label: "Category Label", type: "text", placeholder: "Branch Office" },
-    { key: "district", label: "District", type: "text", placeholder: "Colombo" },
-    { key: "city", label: "City", type: "text", placeholder: "Colombo 03" },
-    { key: "address", label: "Address", type: "textarea", placeholder: "No. 42, Plantation Avenue" },
-    { key: "phone", label: "Phone Hotline", type: "text", placeholder: "+94 11 234 5678" },
-    { key: "email", label: "Email Address", type: "text", placeholder: "colombo@cdp.lk" },
-    { key: "hours", label: "Operating Hours", type: "text", placeholder: "Mon – Fri: 8:30 AM – 5:00 PM" },
-    { key: "lat", label: "Latitude", type: "text", placeholder: "6.9271" },
-    { key: "lng", label: "Longitude", type: "text", placeholder: "79.8612" },
-    { key: "map_url", label: "Google Maps Directions / Navigation URL (optional)", type: "text", placeholder: "https://www.google.com/maps/dir/?api=1&destination=..." },
-  ],
 };
 
 export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
@@ -175,7 +160,6 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "branch_preview", key: "heading", label: "Branch Locator Heading", type: "text", value: "Find a Branch Near You" },
     { section: "branch_preview", key: "description", label: "Branch Locator Description", type: "textarea", value: "With operational branches across Sri Lanka, our agronomy and investor advisory teams are on the ground. Select your location or search below." },
     { section: "branch_preview", key: "button_text", label: "Branch Card Directions Button Text", type: "text", value: "Directions" },
-    { section: "branch_preview", key: "locations", label: "Custom Branch Locations List", type: "textarea", value: "[]", isRepeater: true },
     { section: "insights_preview", key: "eyebrow", label: "Insights Eyebrow", type: "text", value: "Field Notes & Intelligence" },
     { section: "insights_preview", key: "heading", label: "Insights Section Heading", type: "text", value: "Agricultural insights, education and company updates" },
     { section: "insights_preview", key: "description", label: "Insights Section Description", type: "textarea", value: "Agronomy briefings, harvest reports and macroeconomic analyses from the field." },

@@ -6,6 +6,9 @@ export interface Branch {
   code: string;
   address: string;
   city: string;
+  phone?: string;
+  hours?: string;
+  description?: string;
   is_active: boolean;
   created_at?: string;
   updated_at?: string;

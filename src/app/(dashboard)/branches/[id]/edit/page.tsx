@@ -18,6 +18,8 @@ function EditBranchContent({ branchId }: { branchId: string }) {
     code: "",
     address: "",
     city: "",
+    phone: "",
+    hours: "",
     is_active: true,
   });
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
@@ -34,6 +36,8 @@ function EditBranchContent({ branchId }: { branchId: string }) {
         code: branch.code || "",
         address: branch.address || "",
         city: branch.city || "",
+        phone: branch.phone || "",
+        hours: branch.description || branch.hours || "",
         is_active: branch.is_active,
       });
     } catch {
@@ -51,7 +55,12 @@ function EditBranchContent({ branchId }: { branchId: string }) {
     setSubmitting(true);
     try {
       await apiClient.put(`/branches/${branchId}`, {
-        ...formData,
+        name: formData.name,
+        code: formData.code,
+        address: formData.address,
+        city: formData.city,
+        phone: formData.phone || null,
+        description: formData.hours || null,
         is_active: formData.is_active ? 1 : 0,
       });
       toast("Branch updated successfully", "success");
@@ -145,7 +154,39 @@ function EditBranchContent({ branchId }: { branchId: string }) {
             </div>
           </div>
 
-          {/* Row 3: Address */}
+          {/* Row 3: Phone Number + Opening Hours */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="e.g. +94 11 400 7007"
+                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+              />
+              {formErrors.phone && <p className="mt-1 text-xs text-red-500">{formErrors.phone[0]}</p>}
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">
+                Opening Hours
+              </label>
+              <input
+                type="text"
+                value={formData.hours}
+                onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+                placeholder="e.g. Mon – Fri: 8:30 AM – 5:00 PM"
+                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+              />
+              {(formErrors.hours || formErrors.description) && (
+                <p className="mt-1 text-xs text-red-500">{(formErrors.hours || formErrors.description)?.[0]}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 4: Address */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-text-primary dark:text-gray-300">Address *</label>
             <textarea

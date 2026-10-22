@@ -106,11 +106,10 @@ function SearchSelect({
                   key={opt}
                   type="button"
                   onClick={() => handleSelect(opt)}
-                  className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-sm ${
-                    opt === value
+                  className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-sm ${opt === value
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-text-primary hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                  }`}
+                    }`}
                 >
                   {opt}
                 </button>
@@ -337,7 +336,12 @@ function BranchesContent() {
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                           {branch.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-medium text-text-primary dark:text-white">{branch.name}</span>
+                        <div>
+                          <span className="font-medium text-text-primary dark:text-white block">{branch.name}</span>
+                          {branch.phone && (
+                            <span className="text-xs text-text-muted dark:text-gray-400 font-mono">{branch.phone}</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -349,11 +353,10 @@ function BranchesContent() {
                     <td className="px-4 py-3 text-text-muted dark:text-gray-400 max-w-[200px] truncate">{branch.address}</td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                          branch.is_active
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${branch.is_active
                             ? "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-                        }`}
+                          }`}
                       >
                         {branch.is_active ? "Active" : "Inactive"}
                       </span>
@@ -469,11 +472,10 @@ function BranchesContent() {
                       onClick={() => fetchBranches(page)}
                       aria-label={`Go to page ${page}`}
                       aria-current={page === pagination.currentPage ? "page" : undefined}
-                      className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${
-                        page === pagination.currentPage
+                      className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium ${page === pagination.currentPage
                           ? "bg-primary text-white"
                           : "border border-border bg-surface text-text-muted hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                      }`}
+                        }`}
                     >
                       {page}
                     </button>

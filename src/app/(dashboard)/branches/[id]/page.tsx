@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
-import { RefreshCw, Edit, Building2, MapPin, Hash, CheckCircle2, XCircle } from "lucide-react";
+import { RefreshCw, Edit, Building2, MapPin, Hash, CheckCircle2, XCircle, Phone, Clock } from "lucide-react";
 import apiClient from "@/lib/api-client";
 import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/lib/auth";
@@ -74,11 +74,10 @@ function ViewBranchContent({ branchId }: { branchId: string }) {
           </div>
           <div className="flex items-center gap-3">
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${
-                branch.is_active
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${branch.is_active
                   ? "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                   : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-              }`}
+                }`}
             >
               {branch.is_active ? (
                 <CheckCircle2 className="h-4 w-4" />
@@ -133,8 +132,33 @@ function ViewBranchContent({ branchId }: { branchId: string }) {
                 <p className="text-sm font-medium text-text-primary dark:text-white">{branch.city}</p>
               </div>
             </div>
+            {branch.phone && (
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20">
+                  <Phone className="h-5 w-5 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted dark:text-gray-400">Phone Number</p>
+                  <p className="text-sm font-medium text-text-primary dark:text-white">{branch.phone}</p>
+                </div>
+              </div>
+            )}
+            {(branch.description || branch.hours) && (
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/20">
+                  <Clock className="h-5 w-5 text-indigo-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted dark:text-gray-400">Opening Hours</p>
+                  <p className="text-sm font-medium text-text-primary dark:text-white">{branch.description || branch.hours}</p>
+                </div>
+              </div>
+            )}
+
+
           </div>
         </div>
+
 
         {/* Address & Status */}
         <div className="rounded-xl border border-border bg-surface p-6 dark:border-gray-700 dark:bg-gray-800">
