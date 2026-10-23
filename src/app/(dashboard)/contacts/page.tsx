@@ -248,7 +248,7 @@ function ContactsContent() {
                             >
                               <Eye className="h-4 w-4" /> View & Reply
                             </button>
-                            {hasPermission("Contact Toggle Active") && (
+                            {hasPermission("Contact Reply") && (
                               <button
                                 onClick={() => { handleToggleStatus(contact); setActionMenuId(null); }}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"

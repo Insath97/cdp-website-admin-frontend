@@ -91,7 +91,7 @@ export const navigation: NavGroup[] = [
     title: "ENGAGEMENT",
     items: [
       {
-        label: "Blogs",
+        label: "Insights",
         href: "/blogs",
         icon: FileText,
         permission: "Event Index",

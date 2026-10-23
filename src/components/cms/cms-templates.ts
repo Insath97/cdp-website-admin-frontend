@@ -257,9 +257,9 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
     { section: "hero", key: "title", label: "Investments Page Title", type: "text", value: "Transparent plantation structures, explained in full" },
     { section: "hero", key: "intro", label: "Investments Page Intro", type: "textarea", value: "Every opportunity has its own structured documentation: plantation overview, crop focus, location and legal framework." },
     { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
-    { section: "projects", key: "eyebrow", label: "Projects Eyebrow Badge", type: "text", value: "Open & Upcoming" },
-    { section: "projects", key: "title", label: "Projects Section Title", type: "text", value: "Explore each opportunity in detail" },
-    { section: "projects", key: "intro", label: "Projects Section Description", type: "textarea", value: "Each project page is designed to be read end-to-end before you speak to an advisor." },
+    { section: "investments", key: "eyebrow", label: "Investments Eyebrow Badge", type: "text", value: "Open & Upcoming" },
+    { section: "investments", key: "title", label: "Investments Section Title", type: "text", value: "Explore each opportunity in detail" },
+    { section: "investments", key: "intro", label: "Investments Section Description", type: "textarea", value: "Each investment plan is designed to be read end-to-end before you speak to an advisor." },
     { section: "cta", key: "eyebrow", label: "CTA Eyebrow Badge", type: "text", value: "Next Step" },
     { section: "cta", key: "title", label: "CTA Section Title", type: "text", value: "Not sure which structure fits? Talk it through first." },
     { section: "cta", key: "description", label: "CTA Section Description", type: "textarea", value: "Our advisors will explain the differences, walk you through documentation and be explicit about the risks — no obligation." },
@@ -268,16 +268,16 @@ export const CMS_DEFAULT_TEMPLATES: Record<string, CmsTemplateField[]> = {
   calculator: [
     { section: "hero", key: "eyebrow", label: "Calculator Page Eyebrow", type: "text", value: "ROI Estimator" },
     { section: "hero", key: "title", label: "Calculator Page Title", type: "text", value: "Explore scenarios — with the assumptions shown" },
-    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Select a Investment Plan and investment capital to see an illustrative outcome. Every figure here is an estimate based on stated assumptions — never a guarantee, forecast or promise of return." },
+    { section: "hero", key: "intro", label: "Calculator Page Intro", type: "textarea", value: "Select an Investment Plan and investment capital to see an illustrative outcome. Every figure here is an estimate based on stated assumptions — never a guarantee, forecast or promise of return." },
     { section: "home_section", key: "eyebrow", label: "Home Section Eyebrow", type: "text", value: "Interactive ROI Estimator" },
     { section: "home_section", key: "title", label: "Home Section Heading", type: "text", value: "Estimate Your Harvest Returns" },
-    { section: "home_section", key: "intro", label: "Home Section Description", type: "textarea", value: "Select a project and enter your capital to view projected returns based on real agricultural cycles." },
+    { section: "home_section", key: "intro", label: "Home Section Description", type: "textarea", value: "Select an investment plan and enter your capital to view projected returns based on real agricultural cycles." },
   ],
 
   insights: [
-    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Insights & News" },
+    { section: "hero", key: "eyebrow", label: "Hero Eyebrow", type: "text", value: "Insights" },
     { section: "hero", key: "title", label: "Insights Page Title", type: "text", value: "Agriculture, investment education and company updates" },
-    { section: "hero", key: "intro", label: "Insights Page Intro", type: "textarea", value: "Plain-language writing from our agronomy, sustainability and investor relations teams — plus verified company and project updates." },
+    { section: "hero", key: "intro", label: "Insights Page Intro", type: "textarea", value: "Plain-language writing from our agronomy, sustainability and investor relations teams — plus verified company updates." },
     { section: "hero", key: "banner_image", label: "Hero Banner Image URL", type: "image", value: "" },
   ],
 

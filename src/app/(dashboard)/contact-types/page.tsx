@@ -536,7 +536,7 @@ function ContactTypesContent() {
                                 <Edit className="h-4 w-4" /> Edit
                               </button>
                             )}
-                            {hasPermission("Contact Type Toggle Active") && (
+                            {hasPermission("Contact Type Update") && (
                               <button
                                 onClick={() => { handleToggleStatus(ct); setActionMenuId(null); }}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
